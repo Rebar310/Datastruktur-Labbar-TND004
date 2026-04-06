@@ -1,0 +1,11 @@
+build/
+.vs/
+*.vsidx
+*.VC.db
+*.VC.opendb
+*.exe
+*.obj
+*.pdb
+*.ilk
+*.log
+*.cache
