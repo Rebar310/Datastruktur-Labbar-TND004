@@ -200,12 +200,12 @@ void execute(std::vector<int>& V, const std::vector<int>& res) {
     TND004::stable_partition_iterative(V, even);
     assert(V == res);  // compare with the expected result
 
-    /*
+    
     // Uncomment for exercise 2
     std::cout << "Divide-and-conquer stable partition\n";
     TND004::stable_partition(copy_, even);
     assert(copy_ == res);  // compare with the expected result
-    */
+    
 }
 
 // Iterative algorithm ***************************************************************************************
@@ -244,12 +244,12 @@ std::vector<int>::iterator TND004::stable_partition(std::vector<int>::iterator f
                                                     std::vector<int>::iterator last,
                                                     std::function<bool(int)> p) {
     // IMPLEMENT
-    // Base case 1: tom sekvens
+    // Base case 1: empty seqence
     if (first == last) {
         return first;
     }
 
-    // Base case 2: ett element
+    // Base case 2: one element
     if (std::next(first) == last) {
         if (p(*first)) {
             return last;
@@ -259,10 +259,10 @@ std::vector<int>::iterator TND004::stable_partition(std::vector<int>::iterator f
         }
     }
 
-    // Divide
+    // Divide to get the mid value
     auto mid = first + std::distance(first, last) / 2;
 
-    // Rekursivt stable partition på vänster och höger halva
+    // Recursively solve left and right halves
     auto it1 = TND004::stable_partition(first, mid, p);
     auto it3 = TND004::stable_partition(mid, last, p);
 
