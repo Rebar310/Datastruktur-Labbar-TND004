@@ -215,22 +215,24 @@ void TND004::stable_partition_iterative(std::vector<int>& V, std::function<bool(
     std::vector<int> stableSortedVector;
 
     // first we loop over the vector and push in the even values in the order as they come
-    for (int i = 0; i < V.size(); i++) {
+    for (int i = 0; i < V.size(); i++) { // O(n)
         if (p(V[i]) == true) { 
             stableSortedVector.push_back(V[i]); 
         }
     }
 
     // then the values that values that is uneven will be saved afterwords in their order
-    for (int i = 0; i < V.size(); i++) {
+    for (int i = 0; i < V.size(); i++) { // O(n)
         if (p(V[i]) == false) {
             stableSortedVector.push_back(V[i]); 
         }
     }
 
     // Replace vector with the new sorted vector
-    V = stableSortedVector;
+    V = stableSortedVector; // O(n)
 
+    // T(n)=O(n)
+    // S(n)=O(n)
 }
 
 /*
@@ -245,13 +247,15 @@ std::vector<int>::iterator TND004::stable_partition(std::vector<int>::iterator f
                                                     std::function<bool(int)> p) {
     // IMPLEMENT
     // Base case 1: empty seqence
+    // first and last are pointers so we check if they have the same placement
     if (first == last) {
         return first;
     }
 
     // Base case 2: one element
+    // checking this by looking at the posisition of the next value and see if it has the same placement
     if (std::next(first) == last) {
-        if (p(*first)) {
+        if (p(*first)) { // if the first element (value) is even return last
             return last;
         }
         else {
@@ -259,15 +263,21 @@ std::vector<int>::iterator TND004::stable_partition(std::vector<int>::iterator f
         }
     }
 
+    // use auto so i dont have to write "std::vector<int>::iterator"
     // Divide to get the mid value
-    auto mid = first + std::distance(first, last) / 2;
+    auto mid = first + (std::distance(first, last) / 2);
 
     // Recursively solve left and right halves
+    // 2T(n/2)
     auto it1 = TND004::stable_partition(first, mid, p);
     auto it3 = TND004::stable_partition(mid, last, p);
 
     // Conquer
+    // O(n)
     return std::rotate(it1, mid, it3);
-
     
+    
+    //T(n) = 2T(n / 2) + O(n) 
+    // T(n) = O(n log n)
+    // S(n) = O(log n)   (stacken)
 }
