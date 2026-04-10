@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\skola\TND004\Datastruktur-Labbar-TND004\build\CMakeFiles\7c916aa7095b7891653c03be39c4a4f5\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{7DF0AAB3-9145-3CA4-8DE5-DAD21580E225}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

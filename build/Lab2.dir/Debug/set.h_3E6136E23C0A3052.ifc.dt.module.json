@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "Lab2.dir\\Debug\\set.obj",
+            "outputs": [
+                "Lab2.dir\\Debug\\set.h_3E6136E23C0A3052.ifc.dt.module.json",
+                "Lab2.dir\\Debug\\set.h_3E6136E23C0A3052.ifc.dt.d.json",
+                "Lab2.dir\\Debug\\set.h.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "C:\\skola\\TND004\\Datastruktur-Labbar-TND004\\code\\lab2\\set.h",
+                    "source-path": "c:\\skola\\tnd004\\datastruktur-labbar-tnd004\\code\\lab2\\set.h",
+                    "lookup-method": "absolute"
+                }
+            ],
+            "requires": []
+        }
+    ]
+}

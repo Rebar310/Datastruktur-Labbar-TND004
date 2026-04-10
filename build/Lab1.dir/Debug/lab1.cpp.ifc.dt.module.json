@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "Lab1.dir\\Debug\\lab1.obj",
+            "outputs": [
+                "Lab1.dir\\Debug\\lab1.cpp.ifc.dt.module.json",
+                "Lab1.dir\\Debug\\lab1.cpp.ifc.dt.d.json"
+            ],
+            "requires": []
+        }
+    ]
+}

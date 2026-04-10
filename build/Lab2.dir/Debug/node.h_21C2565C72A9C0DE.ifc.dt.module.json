@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "Lab2.dir\\Debug\\node.obj",
+            "outputs": [
+                "Lab2.dir\\Debug\\node.h_21C2565C72A9C0DE.ifc.dt.module.json",
+                "Lab2.dir\\Debug\\node.h_21C2565C72A9C0DE.ifc.dt.d.json",
+                "Lab2.dir\\Debug\\node.h.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "C:\\skola\\TND004\\Datastruktur-Labbar-TND004\\code\\lab2\\node.h",
+                    "source-path": "c:\\skola\\tnd004\\datastruktur-labbar-tnd004\\code\\lab2\\node.h",
+                    "lookup-method": "absolute"
+                }
+            ],
+            "requires": []
+        }
+    ]
+}
