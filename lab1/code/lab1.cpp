@@ -210,7 +210,7 @@ void execute(std::vector<int>& V, const std::vector<int>& res) {
 // Iterative algorithm
 void TND004::stable_partition_iterative(std::vector<int>& V, std::function<bool(int)> p) {
     // IMPLEMENT before Lab1 HA
-    std::vector<int> stableSortedVector;
+	std::vector<int> stableSortedVector;//en tom vector som kommer att innehålla de sorterade värdena
 
     // first we loop over the vector and push in the even values in the order as they come
     for (int i = 0; i < V.size(); i++) {
