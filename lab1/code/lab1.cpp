@@ -33,9 +33,9 @@ public:
 
 private:
     std::ostream& os_;    // output stream
-    const int per_line_;  // value of columns per line
+    const int per_line_;  // number of columns per line
     const int width_;     // column width
-    int outputted_{0};    // counter of value of items written to os_
+    int outputted_{0};    // counter of number of items written to os_
 };
 
 /* ************************ */
@@ -187,7 +187,6 @@ int main() {
  * Functions definitions                 *
  *****************************************/
 
-// Returns true if value is even
 bool even(int i) {
     return i % 2 == 0;
 }
@@ -208,28 +207,28 @@ void execute(std::vector<int>& V, const std::vector<int>& res) {
     
 }
 
-// Iterative algorithm ***************************************************************************************
+// Iterative algorithm
 void TND004::stable_partition_iterative(std::vector<int>& V, std::function<bool(int)> p) {
     // IMPLEMENT before Lab1 HA
-
     std::vector<int> stableSortedVector;
 
     // first we loop over the vector and push in the even values in the order as they come
     for (int i = 0; i < V.size(); i++) {
-        if (p(V[i]) == true) { 
-            stableSortedVector.push_back(V[i]); 
+        if (p(V[i]) == true) {
+            stableSortedVector.push_back(V[i]);
         }
     }
 
     // then the values that values that is uneven will be saved afterwords in their order
     for (int i = 0; i < V.size(); i++) {
         if (p(V[i]) == false) {
-            stableSortedVector.push_back(V[i]); 
+            stableSortedVector.push_back(V[i]);
         }
     }
 
     // Replace vector with the new sorted vector
     V = stableSortedVector;
+
 
 }
 
@@ -244,7 +243,7 @@ std::vector<int>::iterator TND004::stable_partition(std::vector<int>::iterator f
                                                     std::vector<int>::iterator last,
                                                     std::function<bool(int)> p) {
     // IMPLEMENT
-    // Base case 1: empty seqence
+        // Base case 1: empty seqence
     if (first == last) {
         return first;
     }
@@ -268,6 +267,4 @@ std::vector<int>::iterator TND004::stable_partition(std::vector<int>::iterator f
 
     // Conquer
     return std::rotate(it1, mid, it3);
-
-    
 }
