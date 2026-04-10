@@ -1,9 +1,0 @@
-﻿  Building Custom Rule C:/skola/TND004/Datastruktur-Labbar-TND004/code/CMakeLists.txt
-  Scanning sources for module dependencies...
-  lab1.cpp
-  Compiling...
-  lab1.cpp
-C:\skola\TND004\Datastruktur-Labbar-TND004\code\lab1\lab1.cpp(216,23): warning C4388: '<': signed/unsigned mismatch
-C:\skola\TND004\Datastruktur-Labbar-TND004\code\lab1\lab1.cpp(223,23): warning C4388: '<': signed/unsigned mismatch
-LINK : warning LNK4300: ignoring '/INCREMENTAL' because input module contains ASAN metadata
-  Lab1.vcxproj -> C:\skola\TND004\Datastruktur-Labbar-TND004\build\Debug\Lab1.exe
