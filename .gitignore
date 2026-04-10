@@ -1,0 +1,18 @@
+
+
+
+# Visual Studio skräp
+.vs/
+out/
+build/
+bin/
+obj/
+
+# Kompilerade filer
+*.exe
+*.pdb
+*.user
+
+# CMake skräp
+CMakeFiles/
+CMakeCache.txt
