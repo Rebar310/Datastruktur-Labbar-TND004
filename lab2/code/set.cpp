@@ -20,6 +20,14 @@ int Set::get_count_nodes() {
  */
 Set::Set() : counter{0} {
     // IMPLEMENT before Lab2 HA
+    head = new Node{};
+    tail = new Node{};
+
+    head->next = tail;
+    head->prev = nullptr;
+
+    tail->prev = head;
+    tail->next = nullptr;
 }
 
 /*
