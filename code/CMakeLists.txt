@@ -17,8 +17,8 @@ function(enable_warnings target)
     )
 endfunction()
 
-add_executable(Lab1 code/lab1/lab1.cpp code/lab1/test_data.txt code/lab1/test_result.txt)
-add_executable(Lab2 code/lab2/lab2.cpp code/lab2/set.cpp code/lab2/node.h code/lab2/set.h)
+add_executable(Lab1 lab1/lab1.cpp lab1/test_data.txt lab1/test_result.txt)
+add_executable(Lab2 lab2/lab2.cpp lab2/set.cpp lab2/node.h lab2/set.h)
 
 enable_warnings(Lab1)
 enable_warnings(Lab2)

@@ -146,7 +146,7 @@ int main() {
     {
         std::cout << "\n\nTEST PHASE 6: test with long sequence loaded from a file\n\n";
 
-        std::ifstream file("../code/test_data.txt"); // if mac then change this path
+        std::ifstream file("C:/skola/TND004/Datastruktur-Labbar-TND004/code/lab1/test_data.txt"); // if mac then change this path
 
         if (!file) {
             std::cout << "Could not open test_data.txt!!\n";
@@ -163,7 +163,7 @@ int main() {
         std::for_each(std::begin(seq), std::end(seq), Formatter<int>(std::cout, 8, 5));*/
 
         // read the result sequence from file
-        file.open("../code/test_result.txt");  // if mac then change this path
+        file.open("C:/skola/TND004/Datastruktur-Labbar-TND004/code/lab1/test_result.txt");  // if mac then change this path
 
         if (!file) {
             std::cout << "Could not open test_result.txt!!\n";

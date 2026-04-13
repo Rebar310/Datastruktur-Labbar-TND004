@@ -71,6 +71,7 @@ public:
      */
     bool is_empty() const {
         return (counter == 0);
+
     }
 
     /*
