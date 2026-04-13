@@ -1,6 +1,5 @@
 # Lab1 Notes:
-(ska snart lägga in förklaring för Excercise 3 här)
-
+![Lab1Notes](IMG_1098.jpeg)
 
 # Lab2 Notes:
 
