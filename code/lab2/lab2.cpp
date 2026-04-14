@@ -39,7 +39,7 @@ int main() {
         os << S1 << ' ' << S2 << ' ' << S3;
 
         std::string tmp{os.str()};
-        std::cout << "DEBUG: tmp: [" << tmp << "]" << std::endl;
+        //std::cout << "DEBUG: tmp: [" << tmp << "]" << std::endl;
         assert((tmp == std::string{"Set is empty! { -4 } Set is empty!"}));
     }
 
@@ -66,7 +66,7 @@ int main() {
         os << S1 << " " << S2;
 
         std::string tmp{os.str()};
-        std::cout << "DEBUG: tmp: [" << tmp << "]" << std::endl;
+        //std::cout << "DEBUG: tmp: [" << tmp << "]" << std::endl;
         assert((tmp == std::string{"{ 1 3 5 } { 2 3 4 }"}));
     }
 
@@ -91,7 +91,7 @@ int main() {
         os << S1 << " " << S2;
 
         std::string tmp{os.str()};
-        std::cout << "DEBUG: tmp: [" << tmp << "]" << std::endl;
+        //std::cout << "DEBUG: tmp: [" << tmp << "]" << std::endl;
         assert((tmp == std::string{"{ 1 3 5 } { 1 3 5 }"}));
     }
 
@@ -123,7 +123,7 @@ int main() {
         os << S1 << " " << S2 << " " << S3;
 
         std::string tmp{os.str()};
-        std::cout << "DEBUG: tmp: [" << tmp << "]" << std::endl;
+        //std::cout << "DEBUG: tmp: [" << tmp << "]" << std::endl;
         assert((tmp == std::string{"{ 2 3 4 } { 2 3 4 } { 2 3 4 }"}));
     }
 
@@ -214,114 +214,114 @@ int main() {
 
     assert(Set::get_count_nodes() == 0);
 
-    ///*****************************************************
-    // * TEST PHASE 7                                       *
-    // * Overloaded operators: operator+=, operator*=       *
-    // *                   and operator-=                   *
-    // ******************************************************/
-    //std::cout << "\nTEST PHASE 7: operator+=, operator*=, operator-=\n";
+    /*****************************************************
+     * TEST PHASE 7                                       *
+     * Overloaded operators: operator+=, operator*=       *
+     *                   and operator-=                   *
+     ******************************************************/
+    std::cout << "\nTEST PHASE 7: operator+=, operator*=, operator-=\n";
 
-    //{
-    //    std::vector<int> A1{1, 3, 5, 8};
-    //    std::vector<int> A2{2, 3, 7};
+    {
+        std::vector<int> A1{1, 3, 5, 8};
+        std::vector<int> A2{2, 3, 7};
 
-    //    Set S1{A1};
-    //    Set S2{A2};
+        Set S1{A1};
+        Set S2{A2};
 
-    //    S1 += S2;
-    //    assert(Set::get_count_nodes() == 13);
+        S1 += S2;
+        assert(Set::get_count_nodes() == 13);
 
-    //    S2 *= S2;
-    //    assert(Set::get_count_nodes() == 13);
+        S2 *= S2;
+        assert(Set::get_count_nodes() == 13);
 
-    //    // Test
-    //    std::vector<int> A3{1, 2, 3, 5, 7, 8};
-    //    assert(S1 == Set{A3});
-    //    assert(S2 == S2);
+        // Test
+        std::vector<int> A3{1, 2, 3, 5, 7, 8};
+        assert(S1 == Set{A3});
+        assert(S2 == S2);
 
-    //    S1 -= S1;
-    //    assert(S1.is_empty());
+        S1 -= S1;
+        assert(S1.is_empty());
 
-    //    assert(Set::get_count_nodes() == 7);
-    //}
+        assert(Set::get_count_nodes() == 7);
+    }
 
-    //assert(Set::get_count_nodes() == 0);
+    assert(Set::get_count_nodes() == 0);
 
-    ///*****************************************************
-    // * TEST PHASE 8                                       *
-    // * Overloaded operators: union, intersection, and     *
-    // * and difference                                     *
-    // ******************************************************/
-    //std::cout << "\nTEST PHASE 8: union, intersection, and difference\n";
+    /*****************************************************
+     * TEST PHASE 8                                       *
+     * Overloaded operators: union, intersection, and     *
+     * and difference                                     *
+     ******************************************************/
+    std::cout << "\nTEST PHASE 8: union, intersection, and difference\n";
 
-    //{
-    //    std::vector<int> A1{1, 3, 5, 8};
-    //    std::vector<int> A2{2, 3, 7};
+    {
+        std::vector<int> A1{1, 3, 5, 8};
+        std::vector<int> A2{2, 3, 7};
 
-    //    Set S1{A1};
-    //    Set S2{A2};
-    //    Set S3{};
+        Set S1{A1};
+        Set S2{A2};
+        Set S3{};
 
-    //    S3 = S1 + S2;
-    //    assert(Set::get_count_nodes() == 19);
+        S3 = S1 + S2;
+        assert(Set::get_count_nodes() == 19);
 
-    //    // test
-    //    std::vector<int> A3{1, 2, 3, 5, 7, 8};
-    //    assert(S3 == Set{A3});
+        // test
+        std::vector<int> A3{1, 2, 3, 5, 7, 8};
+        assert(S3 == Set{A3});
 
-    //    S3 = S1 * S2;
-    //    assert(Set::get_count_nodes() == 14);
+        S3 = S1 * S2;
+        assert(Set::get_count_nodes() == 14);
 
-    //    // test
-    //    std::vector<int> A4{3};
-    //    assert(S3 == Set{A4});
+        // test
+        std::vector<int> A4{3};
+        assert(S3 == Set{A4});
 
-    //    S3 = S1 - S2;
-    //    // test
-    //    std::vector<int> A5{1, 5, 8};
-    //    assert(S3 == Set{A5});
-    //}
+        S3 = S1 - S2;
+        // test
+        std::vector<int> A5{1, 5, 8};
+        assert(S3 == Set{A5});
+    }
 
-    //assert(Set::get_count_nodes() == 0);
+    assert(Set::get_count_nodes() == 0);
 
-    ///*****************************************************
-    // * TEST PHASE 9                                       *
-    // * Overloaded operators: mixed-mode arithmetic        *
-    // ******************************************************/
-    //std::cout << "\nTEST PHASE 9: mixed-mode arithmetic\n";
+    /*****************************************************
+     * TEST PHASE 9                                       *
+     * Overloaded operators: mixed-mode arithmetic        *
+     ******************************************************/
+    std::cout << "\nTEST PHASE 9: mixed-mode arithmetic\n";
 
-    //{
-    //    std::vector<int> A1{1, 3, 5};
-    //    std::vector<int> A2{2, 3, 4};
-    //    std::vector<int> A3{3, 10};
+    {
+        std::vector<int> A1{1, 3, 5};
+        std::vector<int> A2{2, 3, 4};
+        std::vector<int> A3{3, 10};
 
-    //    Set S1{A1};
-    //    Set S2{A2};
-    //    Set S3{A3};
+        Set S1{A1};
+        Set S2{A2};
+        Set S3{A3};
 
-    //    // Note: conversion constructor is called
-    //    S3 = 4 - S1 - 5 - (S1 + S2) - 99999;
-    //    assert(Set::get_count_nodes() == 12);
-    //    // test
-    //    assert(S3 == Set{});
+        // Note: conversion constructor is called
+        S3 = 4 - S1 - 5 - (S1 + S2) - 99999;
+        assert(Set::get_count_nodes() == 12);
+        // test
+        assert(S3 == Set{});
 
-    //    S3 = 3 * S2 + 4;
-    //    assert(Set::get_count_nodes() == 14);
-    //    // test
-    //    assert(S3 == Set(std::vector<int>{3, 4}));
+        S3 = 3 * S2 + 4;
+        assert(Set::get_count_nodes() == 14);
+        // test
+        assert(S3 == Set(std::vector<int>{3, 4}));
 
-    //    std::vector<int> A4{3, 4, 24};
-    //    assert((S2 - 2 + S3 + 24) == Set{A4});
-    //    assert(Set::get_count_nodes() == 14);
+        std::vector<int> A4{3, 4, 24};
+        assert((S2 - 2 + S3 + 24) == Set{A4});
+        assert(Set::get_count_nodes() == 14);
 
-    //    S2 += 6;
-    //    assert(Set::get_count_nodes() == 15);
+        S2 += 6;
+        assert(Set::get_count_nodes() == 15);
 
-    //    // test
-    //    A2.push_back(6);
-    //    assert(S2 == Set{A2});
-    //}
-    //assert(Set::get_count_nodes() == 0);
+        // test
+        A2.push_back(6);
+        assert(S2 == Set{A2});
+    }
+    assert(Set::get_count_nodes() == 0);
 
-    //std::cout << "Success!!\n";
+    std::cout << "Success!!\n";
 }

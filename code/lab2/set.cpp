@@ -154,11 +154,14 @@ std::partial_ordering Set::operator<=>(const Set& S) const {
 
     if (ptr1 != tail) is_sub = false;   // *this har mer skräp kvar
     if (ptr2 != S.tail) is_super = false; // S har mer skräp kvar
-
+	//om båda är delmängder av varandra så är de lika
     if (is_sub && is_super) return std::partial_ordering::equivalent;
+	//om *this är en delmängd av S så returnerar vi less
     if (is_sub) return std::partial_ordering::less;
+	//om S är en delmängd av *this så returnerar vi greater
     if (is_super) return std::partial_ordering::greater;
 
+	//om de inte är delmängder av varandra så är de inte jämförbara
     return std::partial_ordering::unordered;
 
 }
@@ -196,7 +199,30 @@ bool Set::operator==(const Set& S) const {
  */
 Set& Set::operator+=(const Set& S) {
     // IMPLEMENT
-    return *this;
+	// Vi har två pekare, en för varje lista, som startar från första riktiga noden i respektive lista
+    Node* ptr1 = head->next;
+	Node* ptr2 = S.head->next;
+	// Vi loopar tills vi når slutet av någon av listorna
+	while (ptr1 != tail && ptr2 != S.tail) {    //om vi inte har nått slutet av någon av listorna
+        if (ptr1->value < ptr2->value) {  // om värdet i *this är mindre än värdet i S
+            ptr1 = ptr1->next;  // gå vidare till nästa nod i *this
+        }
+        else if (ptr2->value < ptr1->value) {  // om värdet i S är mindre än värdet i *this
+            insert_node(ptr1->prev, ptr2->value);  // infoga värdet från S innan den nuvarande noden i *this
+            ptr2 = ptr2->next;  // gå vidare till nästa nod i S
+        }
+        else {  // om värdena är lika, gå vidare i båda listorna
+            ptr1 = ptr1->next;  // gå vidare till nästa nod i *this
+            ptr2 = ptr2->next;  // gå vidare till nästa nod i S
+        }
+	}
+
+	//om S har fler element kvar som inte finns i *this, så infogar vi dem i *this
+    while (ptr2 != S.tail) {  // loopar tills vi når slutet av S
+        insert_node(tail->prev, ptr2->value);  // infoga värdet från S innan dummy tail i *this
+        ptr2 = ptr2->next;  // gå vidare till nästa nod i S
+    }
+	return *this;
 }
 
 /*
@@ -205,6 +231,32 @@ Set& Set::operator+=(const Set& S) {
  */
 Set& Set::operator*=(const Set& S) {
     // IMPLEMENT
+	//pekarna startar från första riktiga noden i respektive lista
+   Node* ptr1 = head->next;
+   Node* ptr2 = S.head->next;
+   // Vi loopar tills vi når slutet av någon av listorna
+   while (ptr1 != tail && ptr2 != S.tail) {
+       if (ptr1->value < ptr2->value) {  // om värdet i *this är mindre än värdet i S
+           Node* to_remove = ptr1;  // spara pekaren till den nuvarande noden i *this
+           ptr1 = ptr1->next;  // gå vidare till nästa nod i *this
+           remove_node(to_remove);  // ta bort den nuvarande noden i *this eftersom den inte finns i S
+       }
+       else if (ptr2->value < ptr1->value) {  // om värdet i S är mindre än värdet i *this
+           ptr2 = ptr2->next;  // gå vidare till nästa nod i S
+       }
+       else {  // om värdena är lika, gå vidare i båda listorna
+           ptr1 = ptr1->next;  // gå vidare till nästa nod i *this
+           ptr2 = ptr2->next;  // gå vidare till nästa nod i S
+	   }
+   }
+
+   //allt som finns kvar i *this efter att vi har nått slutet av S måste tas bort, eftersom det inte finns i S
+   while (ptr1 != tail) {  // loopar tills vi når slutet av *this
+       Node* to_remove = ptr1;  // spara pekaren till den nuvarande noden i *this
+       ptr1 = ptr1->next;  // gå vidare till nästa nod i *this
+       remove_node(to_remove);  // ta bort den nuvarande noden i *this eftersom den inte finns i S
+   }
+
     return *this;
 }
 
@@ -214,6 +266,27 @@ Set& Set::operator*=(const Set& S) {
  */
 Set& Set::operator-=(const Set& S) {
     // IMPLEMENT
+	//pekarna startar från första riktiga noden i respektive lista
+    Node* ptr1 = head->next;
+	Node* ptr2 = S.head->next;
+	//vi loopar tills vi når slutet av någon av listorna
+    while (ptr1 != tail && ptr2 != S.tail) {
+        if (ptr1->value < ptr2->value) {  // om värdet i *this är mindre än värdet i S
+            ptr1 = ptr1->next;  // gå vidare till nästa nod i *this
+        }
+        else if (ptr2->value < ptr1->value) {  // om värdet i S är mindre än värdet i *this
+            ptr2 = ptr2->next;  // gå vidare till nästa nod i S
+        }
+        else {  // om värdena är lika, ta bort den nuvarande noden i *this eftersom den finns i S
+            Node* to_remove = ptr1;  // spara pekaren till den nuvarande noden i *this
+            ptr1 = ptr1->next;  // gå vidare till nästa nod i *this
+            ptr2 = ptr2->next;  // gå vidare till nästa nod i S
+            remove_node(to_remove);  // ta bort den nuvarande noden i *this eftersom den finns i S
+        }
+    }
+
+	//drain: behövs ej eftersom allt som finns kvar i *this efter att vi har nått slutet av S inte finns i S, så det ska inte tas bort
+        
     return *this;
 }
 

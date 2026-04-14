@@ -186,7 +186,7 @@ int main() {
 /****************************************
  * Functions definitions                 *
  *****************************************/
-
+//returnerae true om i är jämn, annars false
 bool even(int i) {
     return i % 2 == 0;
 }
@@ -210,27 +210,29 @@ void execute(std::vector<int>& V, const std::vector<int>& res) {
 // Iterative algorithm
 void TND004::stable_partition_iterative(std::vector<int>& V, std::function<bool(int)> p) {
     // IMPLEMENT before Lab1 HA
-	std::vector<int> stableSortedVector;//en tom vector som kommer att innehålla de sorterade värdena
+	std::vector<int> stableSortedVector; //en tom vector som kommer att innehålla de sorterade värdena
 
-    // first we loop over the vector and push in the even values in the order as they come
+	//Loopar igenom hela vektorn och lägger till de jämna värdena i den nya vektorn i deras ordning
     for (int i = 0; i < V.size(); i++) {
         if (p(V[i]) == true) {
-            stableSortedVector.push_back(V[i]);
+			stableSortedVector.push_back(V[i]); //lägger till sist i den nya vektorn, ordning bevaras
         }
     }
 
-    // then the values that values that is uneven will be saved afterwords in their order
+	// De som inte var jämna (false) läggs till i den nya vektorn i deras ordning
     for (int i = 0; i < V.size(); i++) {
         if (p(V[i]) == false) {
             stableSortedVector.push_back(V[i]);
         }
     }
 
-    // Replace vector with the new sorted vector
+	// den gammal vektorn V ersätts med den nya vektorn som nu är stabilt sorterad
     V = stableSortedVector;
 
-
 }
+
+
+
 
 /*
  * Auxiliary function that performs the stable partition recursively
@@ -243,27 +245,29 @@ std::vector<int>::iterator TND004::stable_partition(std::vector<int>::iterator f
                                                     std::vector<int>::iterator last,
                                                     std::function<bool(int)> p) {
     // IMPLEMENT
-        // Base case 1: empty seqence
+	// Base case 1: empty seqence, finns inget returnera first
     if (first == last) {
         return first;
     }
 
-    // Base case 2: one element
+	// Base case 2: one element, iteratorn precis efter first är last, så det finns bara ett element
     if (std::next(first) == last) {
+		//om det elementet har egenskapen p så returnerar vi last, annars returnerar vi first
         if (p(*first)) {
             return last;
         }
+		//om det inte har egenskapen p så returnerar vi first
         else {
             return first;
         }
     }
 
-    // Divide to get the mid value
-    auto mid = first + std::distance(first, last) / 2;
+	// Divide to get the mid value, beräknar mitten av intervallet [first, last) genom att ta avståndet mellan first och last och dela det på 2, sedan addera det till first
+	auto mid = first + std::distance(first, last) / 2;  //distance(first, last) ger antalet element i intervallet [first, last), och genom att dela det på 2 får vi antalet element i den första halvan av intervallet. Genom att addera det till first får vi iteratorn som pekar på mitten av intervallet.
 
     // Recursively solve left and right halves
-    auto it1 = TND004::stable_partition(first, mid, p);
-    auto it3 = TND004::stable_partition(mid, last, p);
+	auto it1 = TND004::stable_partition(first, mid, p); //vänstra halvan, returnerar iteratorn som pekar på slutet av blocket med egenskapen p i den vänstra halvan
+    auto it3 = TND004::stable_partition(mid, last, p); //högra halvan, returnerar iteratorn som pekar på slutet av blocket med egenskapen p i den högra halvan
 
     // Conquer
     return std::rotate(it1, mid, it3);
