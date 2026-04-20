@@ -1,4 +1,4 @@
-#include "set.h"
+﻿#include "set.h"
 #include "node.h"
 
 int Set::Node::count_nodes = 0;  // Do not modify this variable anywhere in your code
@@ -20,23 +20,24 @@ int Set::get_count_nodes() {
  */
 Set::Set() : counter{0} {
     // IMPLEMENT before Lab2 HA
-    head = new Node{};
-    tail = new Node{};
+    // anropar konstruktorn med default värden
+    head = new Node{}; // Skapar en dummy "head"-nod (början av listan)
+    tail = new Node{}; // Skapar en dummy "tail"-nod (slutet av listan)
 
-    head->next = tail;
-    head->prev = nullptr;
+    head->next = tail; // Head ska peka framåt på tail
+    head->prev = nullptr;// Head är första noden → inget före den
 
-    tail->prev = head;
-    tail->next = nullptr;
+    tail->prev = head; // Tail ska peka bakåt på head
+    tail->next = nullptr; // Tail är sista noden → inget efter den
 }
 
 /*
  *  Conversion constructor: convert val into singleton {val}
  */
-Set::Set(int val) : Set{} {  // create an empty list
+Set::Set(int val) : Set{} {  // create an empty list ( alltså kör defualt constructor)
     // IMPLEMENT before Lab2 HA
-    insert_node(head, val);
-    counter = 1;
+    insert_node(head, val); // Lägger in en ny nod med värdet val direkt efter head
+    counter = 1; // Setet innehåller nu ett exakt element
 }
 
 /*
@@ -46,12 +47,11 @@ Set::Set(int val) : Set{} {  // create an empty list
  */
 Set::Set(const std::vector<int>& list_of_values) : Set{} {  // create an empty list
     // IMPLEMENT before Lab2 HA
-    Node* p = head;
 
-    for (int value : list_of_values) {
-        insert_node(p, value);
-        p = p->next;
-        ++counter;
+    // Loopa igenom alla värden i vektorn
+    for (int val : list_of_values) {
+        insert_node(tail->prev, val);  // lägg till sist, precis innan tail varje gång
+        ++counter;                     // uppdatera storlek
     }
 }
 
@@ -62,13 +62,11 @@ Set::Set(const std::vector<int>& list_of_values) : Set{} {  // create an empty l
  */
 Set::Set(const Set& S) : Set{} {  // create an empty list
     // IMPLEMENT before Lab2 HA
-    Node* p_this = head;
-    Node* p_S = S.head->next;
+    Node* ptr = S.head->next;  // startar från första riktiga noden i S
 
-    while (p_S != S.tail) {
-        insert_node(p_this, p_S->value);
-        p_this = p_this->next;
-        p_S = p_S->next;
+    while (ptr != S.tail) {  // loopar tills vi når dummy tail
+        insert_node(tail->prev, ptr->value);  // infoga varje val innan dummy tail
+        ptr = ptr->next;  // gå vidare till nästa nod
         ++counter;
     }
 }
@@ -79,15 +77,15 @@ Set::Set(const Set& S) : Set{} {  // create an empty list
  */
 void Set::make_empty() {
     // IMPLEMENT before Lab2 HA
-    Node* current = head->next;
+    Node* current = head->next; // börja på första riktiga noden
 
-    while (current != tail) {
-        Node* temp = current;
-        current = current->next;
-        remove_node(temp);
+    while (current != tail) { // fortsätt tills vi når dummy tail
+        Node* nodeToRemove = current; // spara noden som ska tas bort
+        current = current->next; // gå vidare innan noden tas bort
+        remove_node(nodeToRemove); // ta bort noden ur listan
     }
 
-    counter = 0;
+    counter = 0; // listan är nu tom
 }
 
 /*
@@ -106,12 +104,16 @@ Set::~Set() {
  * Use copy-and swap idiom -- TNG033: lecture 5
  */
 Set& Set::operator=(Set S) {
+    // OBS: S skickas in "by value"
+    // → det betyder att en KOPIA av S redan har skapats (via copy constructor)
+    
     // IMPLEMENT before Lab2 HA
-    std::swap(head, S.head);
-    std::swap(tail, S.tail);
-    std::swap(counter, S.counter);
+    std::swap(head, S.head); // Byt ut vår listas head med kopians head
+    std::swap(tail, S.tail); // Samma sak för tail (dummy-noden i slutet)
+    std::swap(counter, S.counter); // Byt antal element så att *this får rätt storlek
 
-    return *this;
+    return *this;  // Returnera referens till nu uppdaterade objektet
+
 }
 
 
@@ -122,19 +124,26 @@ Set& Set::operator=(Set S) {
  */
 bool Set::is_member(int val) const {
     // IMPLEMENT before Lab2 HA
-    Node* current = head->next;
+    Node* current = head->next; // Börja vid första riktiga noden (efter dummy head)
 
-    while (current != tail) {
-        if (current->value == val) {
+    while (current != tail) { // Loopa igenom alla noder tills vi når dummy tail
+        if (current->value == val) { 
+            // Om vi hittar värdet → det finns i mängden
             return true;
         }
         if (current->value > val) {
+            // Om current->value redan är större än val
+            // → då kommer val aldrig dyka upp längre fram
+            // detta eftersom listan är sorterad
             return false;
         }
-        current = current->next;
+        current = current->next; // Gå vidare till nästa nod i listan
+
     }
 
     return false;
+    // Om vi gått igenom hela listan utan att hitta val
+   // → då finns det inte i Set
 }
 
 /*
@@ -248,7 +257,7 @@ Set& Set::operator+=(const Set& S) {
         }
     }
 
-    // L�gg till resten fr�n S
+    // Lägg till resten från S
     while (p2 != S.tail) {
         insert_node(tail->prev, p2->value);
         ++counter;
