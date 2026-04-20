@@ -157,52 +157,75 @@ bool Set::is_member(int val) const {
  */
 std::partial_ordering Set::operator<=>(const Set& S) const {
     // IMPLEMENT before Lab2 HA
-    Node* p1 = head->next;
-    Node* p2 = S.head->next;
+    Node* p1 = head->next;     // Pekare till första riktiga noden i *this
+    Node* p2 = S.head->next; // Pekare till första riktiga noden i S
 
     bool this_has_extra = false; // finns element i *this som inte finns i S?
     bool s_has_extra = false;    // finns element i S som inte finns i *this?
 
-    while (p1 != tail && p2 != S.tail) {
+    while (p1 != tail && p2 != S.tail) {  // Så länge båda listorna fortfarande har element kvar
+
         if (p1->value == p2->value) {
+            // Samma värde i båda mängderna
+            // → gå vidare i båda
             p1 = p1->next;
             p2 = p2->next;
         }
         else if (p1->value < p2->value) {
+            // Ett värde finns i *this som inte finns i S just här
+            // → *this har ett "extra" element
             this_has_extra = true;
             p1 = p1->next;
         }
         else { // p2->value < p1->value
+            // Ett värde finns i S som inte finns i *this just här
+            // → S har ett "extra" element
             s_has_extra = true;
             p2 = p2->next;
         }
 
         if (this_has_extra && s_has_extra) {
+            // Om båda mängderna har egna extra element
+            // → ingen är delmängd av den andra
             return std::partial_ordering::unordered;
         }
     }
 
     while (p1 != tail) {
+        // Om *this fortfarande har element kvar efter att S tog slut
+        // → *this har extra element
         this_has_extra = true;
         p1 = p1->next;
     }
 
     while (p2 != S.tail) {
+        // Om S fortfarande har element kvar efter att *this tog slut
+        // → S har extra element
         s_has_extra = true;
         p2 = p2->next;
     }
 
     if (!this_has_extra && !s_has_extra) {
+        // Inga extra element i någon mängd
+        // → exakt samma innehåll
         return std::partial_ordering::equivalent;
     }
     if (!this_has_extra && s_has_extra) {
+        // *this har inga egna extra element,
+        // men S har fler
+        // → *this är delmängd av S
         return std::partial_ordering::less;
     }
     if (this_has_extra && !s_has_extra) {
+        // S har inga egna extra element,
+        // men *this har fler
+        // → *this är supermängd av S
         return std::partial_ordering::greater;
     }
 
     return std::partial_ordering::unordered;
+    // Säkerhetsretur om båda skulle ha extra element
+
 }
 
 
@@ -216,22 +239,31 @@ std::partial_ordering Set::operator<=>(const Set& S) const {
 bool Set::operator==(const Set& S) const {
     // IMPLEMENT before Lab2 HA
     if (counter != S.counter) {
+        // Om de har olika antal element
+        // → kan de inte vara lika
         return false;
     }
 
-    Node* p1 = head->next;
-    Node* p2 = S.head->next;
+    Node* p1 = head->next;   // Pekare till första riktiga noden i *this
+    Node* p2 = S.head->next; // Pekare till första riktiga noden i S
 
-    while (p1 != tail && p2 != S.tail) {
+
+    while (p1 != tail && p2 != S.tail) {  // Gå igenom båda listorna samtidigt
+
         if (p1->value != p2->value) {
+            // Om något värde skiljer sig
+            // → mängderna är inte lika
             return false;
         }
-        p1 = p1->next;
-        p2 = p2->next;
+        p1 = p1->next; // Gå vidare i första listan
+        p2 = p2->next; // Gå vidare i andra listan
     }
 
     return true;
+    // Om alla värden matchade
+    // → mängderna är lika
 }
+
 
 /*
  * Modify Set *this such that it becomes the union of *this with Set S
@@ -239,32 +271,42 @@ bool Set::operator==(const Set& S) const {
  */
 Set& Set::operator+=(const Set& S) {
     
-    Node* p1 = head->next;      // *this
-    Node* p2 = S.head->next;    // S
+    Node* p1 = head->next;  // Pekare i *this (första riktiga noden)
+    Node* p2 = S.head->next; // Pekare i S (första riktiga noden)
 
-    while (p1 != tail && p2 != S.tail) {
+    while (p1 != tail && p2 != S.tail) {  // Gå igenom båda listorna samtidigt
+
         if (p1->value == p2->value) {
+            // Samma värde finns redan i båda
+            // → hoppa över (ingen dubblett ska läggas till)
             p1 = p1->next;
             p2 = p2->next;
         }
         else if (p2->value < p1->value) {
+            // Ett värde finns i S som inte finns i *this ännu
+            // → lägg in det före p1 (rätt sorterad position)
             insert_node(p1->prev, p2->value);
             ++counter;
-            p2 = p2->next;
+            p2 = p2->next; // gå vidare i S
         }
         else { // p1->value < p2->value
+            // Värdet i *this är mindre → det är redan korrekt
+           // → gå vidare i *this
             p1 = p1->next;
         }
     }
 
-    // Lägg till resten från S
+    // Lägg till resten från S (om S har fler element kvar)
     while (p2 != S.tail) {
+        // Alla dessa är större än allt i *this
+        // → lägg till sist
         insert_node(tail->prev, p2->value);
         ++counter;
         p2 = p2->next;
     }
 
-    return *this;
+    return *this; // Returnera den uppdaterade mängden
+
 }
 
 
@@ -274,32 +316,44 @@ Set& Set::operator+=(const Set& S) {
  */
 Set& Set::operator*=(const Set& S) {
     // IMPLEMENT
-    Node* p1 = head->next;
-    Node* p2 = S.head->next;
+    Node* p1 = head->next; // Pekare till första riktiga noden i *this
+    Node* p2 = S.head->next;  // Pekare till första riktiga noden i S
 
-    while (p1 != tail && p2 != S.tail) {
+    while (p1 != tail && p2 != S.tail) {     // Gå igenom båda listorna samtidigt så länge båda har element kvar
+
         if (p1->value == p2->value) {
+            // Samma värde finns i båda mängderna
+            // → det ska vara kvar i snittet
             p1 = p1->next;
             p2 = p2->next;
         }
         else if (p1->value < p2->value) {
-            Node* temp = p1;
-            p1 = p1->next;
-            remove_node(temp);
-            --counter;
+            // Värdet i *this är mindre än värdet i S
+            // → då finns detta värde inte i S
+            // → ta bort det från *this
+            Node* temp = p1; // spara noden som ska tas bort
+            p1 = p1->next; // gå vidare innan noden tas bort
+            remove_node(temp); // ta bort noden ur *this
+            --counter; // minska antal element
         }
         else {
+            // p2->value < p1->value
+           // Värdet i S är mindre
+           // → gå vidare i S tills vi kanske hittar samma värde som p1
             p2 = p2->next;
         }
     }
 
+    // Om S är slut men *this fortfarande har element kvar,
+    // så finns de inte i S och ska därför tas bort
     while (p1 != tail) {
-        Node* temp = p1;
-        p1 = p1->next;
-        remove_node(temp);
-        --counter;
+        Node* temp = p1;// spara noden som ska tas bort
+        p1 = p1->next; // gå vidare innan borttagning
+        remove_node(temp); // ta bort noden
+        --counter; // minska antal element
     }
 
+    // Returnera den modifierade mängden
     return *this;
 }
 
@@ -309,26 +363,35 @@ Set& Set::operator*=(const Set& S) {
  */
 Set& Set::operator-=(const Set& S) {
     // IMPLEMENT
-    Node* p1 = head->next;
-    Node* p2 = S.head->next;
+    Node* p1 = head->next; // Pekare i *this (börjar på första riktiga noden)
+    Node* p2 = S.head->next; // Pekare i S
 
-    while (p1 != tail && p2 != S.tail) {
+    while (p1 != tail && p2 != S.tail) { // Gå igenom båda listorna samtidigt
+
         if (p1->value == p2->value) {
-            Node* temp = p1;
-            p1 = p1->next;
-            p2 = p2->next;
-            remove_node(temp);
-            --counter;
+            // Samma värde finns i båda
+            // → ska tas bort från *this (eftersom vi gör differens)
+            Node* temp = p1; // spara noden som ska tas bort
+            p1 = p1->next; // gå vidare innan borttagning
+            p2 = p2->next; // gå vidare i S också
+            remove_node(temp); // ta bort noden från *this
+            --counter; // minska antal element
         }
         else if (p1->value < p2->value) {
+            // Värdet i *this är mindre
+            // → det finns inte i S (än)
+            // → ska behållas
             p1 = p1->next;
         }
         else {
+            // p2->value < p1->value
+            // → gå vidare i S för att kanske hitta match
             p2 = p2->next;
         }
     }
 
-    return *this;
+    return *this;    // Returnera den uppdaterade mängden
+
 }
 
 
@@ -343,10 +406,15 @@ Set& Set::operator-=(const Set& S) {
  */
 void Set::insert_node(Node* p, int val) {
     // IMPLEMENT before Lab2 HA
+    // Skapa en ny nod med värdet val
+    // newNode->next ska peka på noden som tidigare låg efter p
+    // newNode->prev ska peka tillbaka på p
     Node* newNode = new Node(val, p->next, p);
 
-    p->next->prev = newNode;
-    p->next = newNode;
+    p->next->prev = newNode; // Noden som tidigare låg efter p ska nu peka tillbaka på newNode
+
+    p->next = newNode; // p ska nu peka framåt på newNode
+
 }
 
 /*
@@ -355,9 +423,10 @@ void Set::insert_node(Node* p, int val) {
  */
 void Set::remove_node(Node* p) {
     // IMPLEMENT before Lab2 HA
-    p->prev->next = p->next;
-    p->next->prev = p->prev;
-    delete p;
+    p->prev->next = p->next;  // Noden före p ska hoppa över p och peka på noden efter p
+    p->next->prev = p->prev; // Noden efter p ska hoppa över p och peka tillbaka på noden före p
+
+    delete p;  // Frigör minnet för noden p
 }
 
 /*
@@ -365,13 +434,18 @@ void Set::remove_node(Node* p) {
  */
 void Set::write_to_stream(std::ostream& os) const {
     if (is_empty()) {
+        // Om mängden är tom, skriv ut ett meddelande
         os << "Set is empty!";
     } else {
+        // Börja på första riktiga noden
         Set::Node* ptr{head->next};
 
         os << "{ ";
         while (ptr != tail) {
+            // Skriv ut värdet i varje nod
             os << ptr->value << " ";
+
+            // Gå vidare till nästa nod
             ptr = ptr->next;
         }
         os << "}";
