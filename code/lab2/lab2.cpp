@@ -114,7 +114,7 @@ int main() {
 
         assert(Set::get_count_nodes() == 12);
 
-        S1 = S2 = S3;
+		S1 = S2 = S3;   //Copy assignment, S1 och S2 ska bli lika med S3, S1=S2 är en copy assignment, S2=S3 är en copy assignment
 
         assert(Set::get_count_nodes() == 15);
 
@@ -231,7 +231,7 @@ int main() {
         S1 += S2;
         assert(Set::get_count_nodes() == 13);
 
-        S2 *= S2;
+        S2 *= S2;       
         assert(Set::get_count_nodes() == 13);
 
         // Test
@@ -269,7 +269,7 @@ int main() {
         std::vector<int> A3{1, 2, 3, 5, 7, 8};
         assert(S3 == Set{A3});
 
-        S3 = S1 * S2;
+		S3 = S1 * S2;   //statement 2: S1*S2. ger T(n)=O(n^2) eftersom vi itererar genom båda listorna samtidigt, och varje nod i varje lista besöks högst en gång
         assert(Set::get_count_nodes() == 14);
 
         // test
@@ -314,7 +314,7 @@ int main() {
         assert((S2 - 2 + S3 + 24) == Set{A4});
         assert(Set::get_count_nodes() == 14);
 
-        S2 += 6;
+		S2 += 6;    //liknar statement 3: k+S1, ger T(n)=O(n) eftersom vi itererar genom listan i S1 och infogar 6 på rätt plats
         assert(Set::get_count_nodes() == 15);
 
         // test

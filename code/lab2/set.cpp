@@ -20,18 +20,23 @@ int Set::get_count_nodes() {
  */
 Set::Set() : counter{0} {
     // IMPLEMENT before Lab2 HA
-	head = new Node(0, nullptr, nullptr);  // skapa dummy heah
-	tail = new Node(0, nullptr, head);  // skapa dummy tail
-	head->next = tail;  // koppla head och tail
+	head = new Node();  // skapa dummy head-nod (början av liistan)
+	tail = new Node();  // skapa dummy tail-nod (slutet av listan)
+
+	head->next = tail;  // koppla head och tail, pekar framåt på tail
+	head->prev = nullptr;  // dummy head har ingen föregångare, första noden i listan
+
+	tail->prev = head;  // dummy tail har dummy head som föregångare, pekar bakåt på head
+	tail->next = nullptr;  // dummy tail har ingen efterföljare, sista noden i listan
 }
 
 /*
  *  Conversion constructor: convert val into singleton {val}
  */
 //tar en ett heltal
-Set::Set(int val) : Set{} {  // create an empty list
+Set::Set(int val) : Set{} {  // create an empty list, (skapar en tom lista)
     // IMPLEMENT before Lab2 HA
-	insert_node(head, val);  // infoga val efter dummy head
+	insert_node(head, val);  // infoga val efter dummy head, O(1), singleton set
 }
 
 /*
@@ -42,6 +47,7 @@ Set::Set(int val) : Set{} {  // create an empty list
  //för test fas 1, tar en vektor av heltal
 Set::Set(const std::vector<int>& list_of_values) : Set{} {  // create an empty list
     // IMPLEMENT before Lab2 HA
+    //loppar igenom alla värden i vektorn
 	for (int val : list_of_values) {
         insert_node(tail->prev, val);  // infoga varje val innan dummy tail
     }
@@ -82,7 +88,7 @@ void Set::make_empty() {
  */
 Set::~Set() {
     // IMPLEMENT before Lab2 HA
-	make_empty();  // töm mängden på alla riktiga noder
+	make_empty();  //ta bort alla riktiga noder
 	delete head;  // ta bort dummy head
 	delete tail; // ta bort dummy tail
 }
@@ -179,10 +185,12 @@ bool Set::operator==(const Set& S) const {
     if (counter != S.counter) {
         return false;
 	}
+
 	Node* ptr1 = head->next;  // startar från första riktiga noden i *this
 	Node* ptr2 = S.head->next;  // startar från första riktiga noden i S
+
 	//går igenom båda listorna samtidigt och jämför värdena
-	while (ptr1 != tail && ptr2 != S.tail) {
+	while (ptr1 != tail && ptr2 != S.tail) { //T(n) = O(n) eftersom vi itererar genom båda listorna samtidigt, och varje nod i varje lista besöks högst en gång
         if (ptr1->value != ptr2->value) {  // om vi hittar en nod med olika värde
             return false;
         }
@@ -202,6 +210,7 @@ Set& Set::operator+=(const Set& S) {
 	// Vi har två pekare, en för varje lista, som startar från första riktiga noden i respektive lista
     Node* ptr1 = head->next;
 	Node* ptr2 = S.head->next;
+
 	// Vi loopar tills vi når slutet av någon av listorna
 	while (ptr1 != tail && ptr2 != S.tail) {    //om vi inte har nått slutet av någon av listorna
         if (ptr1->value < ptr2->value) {  // om värdet i *this är mindre än värdet i S
@@ -217,7 +226,7 @@ Set& Set::operator+=(const Set& S) {
         }
 	}
 
-	//om S har fler element kvar som inte finns i *this, så infogar vi dem i *this
+	//drain: om S har fler element kvar som inte finns i *this, så infogar vi dem i *this
     while (ptr2 != S.tail) {  // loopar tills vi når slutet av S
         insert_node(tail->prev, ptr2->value);  // infoga värdet från S innan dummy tail i *this
         ptr2 = ptr2->next;  // gå vidare till nästa nod i S
@@ -234,8 +243,9 @@ Set& Set::operator*=(const Set& S) {
 	//pekarna startar från första riktiga noden i respektive lista
    Node* ptr1 = head->next;
    Node* ptr2 = S.head->next;
+
    // Vi loopar tills vi når slutet av någon av listorna
-   while (ptr1 != tail && ptr2 != S.tail) {
+   while (ptr1 != tail && ptr2 != S.tail) {     //O(n) eftersom vi itererar genom båda listorna samtidigt, och varje nod i varje lista besöks högst en gång
        if (ptr1->value < ptr2->value) {  // om värdet i *this är mindre än värdet i S
            Node* to_remove = ptr1;  // spara pekaren till den nuvarande noden i *this
            ptr1 = ptr1->next;  // gå vidare till nästa nod i *this
@@ -250,7 +260,7 @@ Set& Set::operator*=(const Set& S) {
 	   }
    }
 
-   //allt som finns kvar i *this efter att vi har nått slutet av S måste tas bort, eftersom det inte finns i S
+   //drain: allt som finns kvar i *this efter att vi har nått slutet av S måste tas bort, eftersom det inte finns i S
    while (ptr1 != tail) {  // loopar tills vi når slutet av *this
        Node* to_remove = ptr1;  // spara pekaren till den nuvarande noden i *this
        ptr1 = ptr1->next;  // gå vidare till nästa nod i *this
@@ -269,6 +279,7 @@ Set& Set::operator-=(const Set& S) {
 	//pekarna startar från första riktiga noden i respektive lista
     Node* ptr1 = head->next;
 	Node* ptr2 = S.head->next;
+
 	//vi loopar tills vi når slutet av någon av listorna
     while (ptr1 != tail && ptr2 != S.tail) {
         if (ptr1->value < ptr2->value) {  // om värdet i *this är mindre än värdet i S
