@@ -140,7 +140,7 @@ std::partial_ordering Set::operator<=>(const Set& S) const {
 
 	Node* ptr1 = head->next;  // startar från första riktiga noden i *this
 	Node* ptr2 = S.head->next;  // startar från första riktiga noden i S
-    //&& ptr1!=nullptr && ptr2!=nullptr
+   
     while (ptr1 != tail && ptr2 != S.tail ) {
         if (ptr1->value < ptr2->value) {  
            //värde finns i *this men inte i s, så *this kan inte vara en delmängd av S
