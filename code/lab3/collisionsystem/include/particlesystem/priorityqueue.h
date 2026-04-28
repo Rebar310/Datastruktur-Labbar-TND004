@@ -83,6 +83,9 @@ PriorityQueue<Comparable>::PriorityQueue(int initCapacity) {
     /*
      * ADD CODE HERE
      */
+    // reservera minne i vektorn pq för initCapacity element
+    pq.reserve(initCapacity);
+
 
     assert(isEmpty());  // do not remove this line
 }
@@ -107,6 +110,9 @@ void PriorityQueue<Comparable>::makeEmpty() {
     /*
      * ADD CODE HERE
      */
+
+    // ta bort elementen i vektorn pq, ger size 0
+    pq.clear();
 }
 
 /**
@@ -119,7 +125,9 @@ bool PriorityQueue<Comparable>::isEmpty() const {
      * ADD CODE HERE
      */
 
-    return false;  // replace this line by the correct return value
+    // kontrollerer om tom då returnerar true annars false
+
+    return pq.empty();  
 }
 
 /**
@@ -130,7 +138,8 @@ size_t PriorityQueue<Comparable>::size() const {
     /*
      * ADD CODE HERE
      */
-    return 0;  // replace this line by the correct return value
+    return pq.size();  // returnerar storleken på vektorn pq
+
 }
 
 /**
@@ -142,7 +151,8 @@ Comparable PriorityQueue<Comparable>::findMin() {
     /*
      * ADD CODE HERE
      */
-    return Comparable{};  // replace this line by the correct return value
+    return pq.front();  // returnerar det minsta elementet i vektorn pq, pq[0], första värdet i
+                        // vektorn är alltid det minsta elementet i en min-heap
 }
 
 /**
@@ -155,13 +165,46 @@ Comparable PriorityQueue<Comparable>::deleteMin() {
     /*
      * ADD CODE HERE
      */
+    // byt ut elementet i rooten (första elementet i vektorn) med det sista elementet i vektorn
+    //spara minsta värdet(rooten)
+    Comparable minValue = pq[0];
+
+    if (pq.size()>1) {  // om det finns fler än ett element i vektorn, då kan vi flytta sista elementet till rooten
+        pq[0] = pq.back();  // flytta sista elementet till rooten
+        pq.pop_back();      // ta bort sista elementet i vektorn
+
+         // återställ heapens order, property=percolate down
+        size_t currentIndex = 0;                   // starta från rooten
+
+        while (leftChild < pq.size()) {  // om vänsterbarnet finns, om noden är en leaf node, då finns det inget vänsterbarn
+            size_t leftChild = 2 * currentIndex + 1;   // vänster barn index
+            size_t rightChild = 2 * currentIndex + 2;  // högerbarn index
+            size_t smallest = currentIndex;            // minsta elementets index
+
+            if (leftChild < pq.size() && pq[leftChild] < pq[smallest]) {  // om vänsterbarnet är mindre än det nuvarande minsta elementet
+                smallest = leftChild;  // uppdatera minsta elementets index
+            }
+            if (rightChild < pq.size() && pq[rightChild] < pq[smallest]) {  // om högerbarnet finns och är mindre än det nuvarande minsta elementet
+                smallest = rightChild;            // uppdatera minsta elementets index
+            }
+            if (smallest != currentIndex) {
+                std::swap(pq[currentIndex], pq[smallest]);  /// byt plats på det nuvarande elementet och det minsta elementet
+                currentIndex = smallest;  // uppdatera currentIndex till det minsta elementets index
+            } else {
+                break;
+            }
+        }
+    } else {
+        // Om det bara fanns ett element, töm bara vektorn
+        pq.pop_back();
+    }
 
     // Do not remove this code block
-#ifdef TEST_PRIORITY_QUEUE
-    assert(isMinHeap());
-#endif
+    #ifdef TEST_PRIORITY_QUEUE
+        assert(isMinHeap());
+    #endif
 
-    return Comparable{};  // replace this line by the correct return value
+    return minValue;  // returnerar det minsta elementet
 }
 
 /**
@@ -172,11 +215,32 @@ void PriorityQueue<Comparable>::insert(const Comparable& x) {
     /*
      * ADD CODE HERE
      */
+    // insert ett värde i taget, börja från en tom heap, lägg till elementet i slutet av vektorn och percolate up 
+    // 
+    //nya elementet sist i vektorn
+    pq.push_back(x);
+    
+    // percolate up
+    size_t currentIndex = pq.size() - 1;  // barnet index, det nya elementet är alltid sist i vektorn
+
+    // om barnet är mindre än föräldern och större än 0, byt plats på barnet och föräldern
+    while (currentIndex > 0) { 
+         size_t parentIndex =(currentIndex - 1) / 2;  // förälderns index, föräldern är alltid (childIndex - 1) / 2
+
+         if (pq[currentIndex] >= pq[parentIndex]]) {  // om barnet är större än eller lika med föräldern, då är heapen återställd
+                                                      // byter plats på barnet och föräldern
+             std::swap(pq[currentIndex], pq[parentIndex]);
+             // uppdatera currentIndex och parentIndex
+             currentIndex = parentIndex;
+         } else {
+             break;  // om barnet är mindre än föräldern, då är heapen återställd
+         }
+    }
 
     // Do not remove this code block
-#ifdef TEST_PRIORITY_QUEUE
-    assert(isMinHeap());
-#endif
+    #ifdef TEST_PRIORITY_QUEUE
+        assert(isMinHeap());
+    #endif
 }
 
 /* ******************* Private member functions ********************* */
@@ -191,6 +255,31 @@ void PriorityQueue<Comparable>::heapify() {
     /*
      * ADD CODE HERE
      */
+    if (pq.empty()) return;  // ifall vectorn är tom, returnera
+
+    //int n = pq.size() - 1;  // sista indexet i vektorn
+    for (int i =static_cast<int>(pq.size() / 2) - 1; i >= 0; --i) {
+        // percolate down
+        size_t currentIndex = i;
+
+        while (leftChild < pq.size()) {
+            size_t leftChild = 2 * currentIndex + 1;
+            size_t rightChild = 2 * currentIndex + 2;
+            size_t smallest = currentIndex;
+
+            if (leftChild < pq.size() && pq[leftChild] < pq[smallest]) {
+                smallest = leftChild;
+            }
+            if (rightChild < pq.size() && pq[rightChild] < pq[smallest]) {
+                smallest = rightChild;
+            }
+            if (smallest == currentIndex) {
+                break;
+            }
+            std::swap(pq[currentIndex], pq[smallest]);
+            currentIndex = smallest;
+        }
+    }
 }
 
 /**
@@ -201,5 +290,18 @@ bool PriorityQueue<Comparable>::isMinHeap() const {
     /*
      * ADD CODE HERE
     */
-    return false;  // replace this line by the correct return value
+    // gå igenom alla noder i heapen och kontrollera om varje förälder är mindre än eller lika med sina barn
+    for (size_t i = 0; i < pq.size(); ++i) {
+        size_t leftChild = 2 * i + 1;
+        size_t rightChild = 2 * i + 2;
+        // om vänsterbarnet finns och föräldern är större än vänsterbarnet, returnera false
+        if (leftChild < pq.size() && pq[i] > pq[leftChild]) {
+            return false;  // föräldern är större än vänsterbarnet
+        }
+        if (rightChild < pq.size() && pq[i] > pq[rightChild]) {
+            return false;  // föräldern är större än högerbarnet
+        }
+    }
+
+    return true;  // alla föräldrar är mindre än eller lika med sina barn
 }
