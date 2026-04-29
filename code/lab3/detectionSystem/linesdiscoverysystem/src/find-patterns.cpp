@@ -57,6 +57,35 @@ void analyseData(const std::filesystem::path& pointsFile,
      * Feel free to modify the function signature
      * Break your code into small functions
      */
+
+    // läs in filen med punkter
+    std::ifstream pointsFileStream(pointsFile);
+    if (!pointsFileStream   ) {
+        std::cerr << "Error kan ej öppna filen: " << pointsFile << std::endl;
+        return;
+    }
+
+    
+    int n;  //antal punkter
+    if (!(pointsFileStream >> n)) return;  // om det inte går att läsa in antalet punkter, returnera
+    std::vector<Point> points;      // läs in punkterna i en vektor från filen
+    points.reserve(n);  // reserverar antalet punkter i vektorn
+
+    // läser in punkterna från filen och lägger till dem i vektorn
+    for (int i = 0; i < n; i++) {
+        int x, y;
+        pointsFileStream >> x >> y;
+        points.push_back(Point(x, y)); 
+    }
+
+    // sortera punkterna i vektorn
+    std::sort(points.begin(), points.end());
+
+    // skapa utdata filen för segmenten och skriv ut segmenten i filen
+
+                        
+
+
 }
 
 void analyseData(const std::string& name) {
