@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "LinesDiscovery.dir\\Debug\\find-patterns.obj",
+            "outputs": [
+                "C:\\Users\\rebec\\Desktop\\Labbar\\Datastrukturer_TND004\\lab3-part2\\detectionSystem\\LinesDiscovery.dir\\Debug\\vc143.pdb",
+                "LinesDiscovery.dir\\Debug\\"
+            ],
+            "requires": []
+        }
+    ]
+}

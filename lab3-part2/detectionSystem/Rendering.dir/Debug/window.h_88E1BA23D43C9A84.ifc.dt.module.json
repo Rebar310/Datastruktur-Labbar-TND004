@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "Rendering.dir\\Debug\\window.obj",
+            "outputs": [
+                "Rendering.dir\\Debug\\window.h_88E1BA23D43C9A84.ifc.dt.module.json",
+                "Rendering.dir\\Debug\\window.h_88E1BA23D43C9A84.ifc.dt.d.json",
+                "Rendering.dir\\Debug\\window.h.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "C:\\Users\\rebec\\Desktop\\Labbar\\Datastrukturer_TND004\\lab3-part2\\detectionSystem\\renderingSystem\\include\\window.h",
+                    "source-path": "c:\\users\\rebec\\desktop\\labbar\\datastrukturer_tnd004\\lab3-part2\\detectionsystem\\renderingsystem\\include\\window.h",
+                    "lookup-method": "absolute"
+                }
+            ],
+            "requires": []
+        }
+    ]
+}

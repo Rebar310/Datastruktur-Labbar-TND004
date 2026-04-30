@@ -1,0 +1,10 @@
+^C:\USERS\REBEC\DESKTOP\LABBAR\DATASTRUKTURER_TND004\LAB3-PART2\DETECTIONSYSTEM\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/rebec/Desktop/Labbar/Datastrukturer_TND004/lab3-part2/detectionSystem -BC:/Users/rebec/Desktop/Labbar/Datastrukturer_TND004/lab3-part2/detectionSystem --check-stamp-file C:/Users/rebec/Desktop/Labbar/Datastrukturer_TND004/lab3-part2/detectionSystem/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

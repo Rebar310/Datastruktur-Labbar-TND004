@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "LinesDiscovery.dir\\Debug\\find-patterns.obj",
+            "outputs": [
+                "LinesDiscovery.dir\\Debug\\find-patterns.hpp_39050B77F0DB5014.ifc.dt.module.json",
+                "LinesDiscovery.dir\\Debug\\find-patterns.hpp_39050B77F0DB5014.ifc.dt.d.json",
+                "LinesDiscovery.dir\\Debug\\find-patterns.hpp.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "C:\\Users\\rebec\\Desktop\\Labbar\\Datastrukturer_TND004\\lab3-part2\\detectionSystem\\linesdiscoverysystem\\include\\find-patterns.hpp",
+                    "source-path": "c:\\users\\rebec\\desktop\\labbar\\datastrukturer_tnd004\\lab3-part2\\detectionsystem\\linesdiscoverysystem\\include\\find-patterns.hpp",
+                    "lookup-method": "absolute"
+                }
+            ],
+            "requires": []
+        }
+    ]
+}

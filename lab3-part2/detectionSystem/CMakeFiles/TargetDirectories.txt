@@ -1,0 +1,4 @@
+C:/Users/rebec/Desktop/Labbar/Datastrukturer_TND004/lab3-part2/detectionSystem/CMakeFiles/Rendering.dir
+C:/Users/rebec/Desktop/Labbar/Datastrukturer_TND004/lab3-part2/detectionSystem/CMakeFiles/LinesDiscovery.dir
+C:/Users/rebec/Desktop/Labbar/Datastrukturer_TND004/lab3-part2/detectionSystem/CMakeFiles/ALL_BUILD.dir
+C:/Users/rebec/Desktop/Labbar/Datastrukturer_TND004/lab3-part2/detectionSystem/CMakeFiles/ZERO_CHECK.dir

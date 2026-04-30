@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\rebec\Desktop\Labbar\Datastrukturer_TND004\lab3-part2\detectionSystem\linesdiscoverysystem\src\find-patterns.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\rebec\Desktop\Labbar\Datastrukturer_TND004\lab3-part2\detectionSystem\linesdiscoverysystem\include\find-patterns.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\rebec\Desktop\Labbar\Datastrukturer_TND004\lab3-part2\detectionSystem\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{16D7E1E8-C121-3181-A8D7-A7FBEF7DA825}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{6AB7CC02-2B60-31F9-9138-1166F473F6AE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

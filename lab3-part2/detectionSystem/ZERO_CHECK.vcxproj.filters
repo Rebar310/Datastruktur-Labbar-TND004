@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\rebec\Desktop\Labbar\Datastrukturer_TND004\lab3-part2\detectionSystem\CMakeFiles\7727a28d0009b149e681775382595af0\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{D044D672-7A10-34BF-BADE-363A094AA9C1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

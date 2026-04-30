@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "Rendering.dir\\Debug\\readfiles.obj",
+            "outputs": [
+                "Rendering.dir\\Debug\\readfiles.h_C7EACEDC220670A7.ifc.dt.module.json",
+                "Rendering.dir\\Debug\\readfiles.h_C7EACEDC220670A7.ifc.dt.d.json",
+                "Rendering.dir\\Debug\\readfiles.h.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "C:\\Users\\rebec\\Desktop\\Labbar\\Datastrukturer_TND004\\lab3-part2\\detectionSystem\\renderingSystem\\include\\readfiles.h",
+                    "source-path": "c:\\users\\rebec\\desktop\\labbar\\datastrukturer_tnd004\\lab3-part2\\detectionsystem\\renderingsystem\\include\\readfiles.h",
+                    "lookup-method": "absolute"
+                }
+            ],
+            "requires": []
+        }
+    ]
+}

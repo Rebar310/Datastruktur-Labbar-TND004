@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "Rendering.dir\\Debug\\lab3-part2.obj",
+            "outputs": [
+                "C:\\Users\\rebec\\Desktop\\Labbar\\Datastrukturer_TND004\\lab3-part2\\detectionSystem\\Rendering.dir\\Debug\\vc143.pdb",
+                "Rendering.dir\\Debug\\"
+            ],
+            "requires": []
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "Rendering.dir\\Debug\\window.obj",
+            "outputs": [
+                "Rendering.dir\\Debug\\window.cpp.ifc.dt.module.json",
+                "Rendering.dir\\Debug\\window.cpp.ifc.dt.d.json"
+            ],
+            "requires": []
+        }
+    ]
+}

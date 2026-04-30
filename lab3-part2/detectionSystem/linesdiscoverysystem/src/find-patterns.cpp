@@ -2,6 +2,10 @@
 #include <compare>
 #include <fstream>
 #include <filesystem>
+#include <vector> // jag la till
+#include <algorithm> // jag la till
+#include <limits> // jag la till
+
 
 #include <find-patterns.hpp>
 
@@ -57,6 +61,73 @@ void analyseData(const std::filesystem::path& pointsFile,
      * Feel free to modify the function signature
      * Break your code into small functions
      */
+
+    std::ifstream in(pointsFile);
+    std::ofstream out(segmentsFile);
+
+    int n;
+    in >> n;
+
+    std::vector<Point> points;
+
+    for (int i = 0; i < n; i++) {
+        int x, y;
+        in >> x >> y;
+        points.emplace_back(x, y);
+    }
+
+    for (const Point& p : points) {
+        std::vector<std::pair<double, Point>> slopes;
+
+        for (const Point& q : points) {
+            if (p == q) {
+                continue;
+            }
+
+            double slope;
+
+            if (q.x_ == p.x_) {
+                slope = std::numeric_limits<double>::infinity();
+            } else {
+                slope = static_cast<double>(q.y_ - p.y_) / (q.x_ - p.x_);
+            }
+
+            slopes.push_back({slope, q});
+        }
+
+        std::sort(slopes.begin(), slopes.end(),
+                  [](const auto& a, const auto& b) { return a.first < b.first; });
+
+        int startIndex = 0;
+
+        while (startIndex < slopes.size()) {
+            int endIndex = startIndex + 1;
+
+            while (endIndex < slopes.size() && slopes[endIndex].first == slopes[startIndex].first) {
+                endIndex++;
+            }
+
+            int groupSize = endIndex - startIndex;
+
+            if (groupSize >= 3) {
+                std::vector<Point> linePoints;
+                linePoints.push_back(p);
+
+                for (int i = startIndex; i < endIndex; i++) {
+                    linePoints.push_back(slopes[i].second);
+                }
+
+                std::sort(linePoints.begin(), linePoints.end());
+
+                Point start = linePoints.front();
+                Point end = linePoints.back();
+
+                out << start.x_ << " " << start.y_ << " " << end.x_ << " " << end.y_ << "\n";
+            }
+
+            startIndex = endIndex;
+        }
+    }
 }
 
 void analyseData(const std::string& name) {

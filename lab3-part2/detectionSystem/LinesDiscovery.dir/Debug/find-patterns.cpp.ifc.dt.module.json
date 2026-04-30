@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "LinesDiscovery.dir\\Debug\\find-patterns.obj",
+            "outputs": [
+                "LinesDiscovery.dir\\Debug\\find-patterns.cpp.ifc.dt.module.json",
+                "LinesDiscovery.dir\\Debug\\find-patterns.cpp.ifc.dt.d.json"
+            ],
+            "requires": []
+        }
+    ]
+}

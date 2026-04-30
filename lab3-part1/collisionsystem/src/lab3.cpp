@@ -73,6 +73,13 @@ std::vector<Particle> read_particles(const std::filesystem::path& file) {
     return particles;
 }
 
+// måste lägga in hela sökvägen:
+// C:\Users\rebec\Desktop\Labbar\Datastrukturer_TND004\lab3-part1\collisionsystem\data\billiards10.txt
+// C:\Users\rebec\Desktop\Labbar\Datastrukturer_TND004\lab3-part1\collisionsystem\data\against-each-other.txt
+// C:\Users\rebec\Desktop\Labbar\Datastrukturer_TND004\lab3-part1\collisionsystem\data\brownian.txt
+// C:\Users\rebec\Desktop\Labbar\Datastrukturer_TND004\lab3-part1\collisionsystem\data\diffusion.txt
+// C:\Users\rebec\Desktop\Labbar\Datastrukturer_TND004\lab3-part1\collisionsystem\data\newton-pendulum.txt
+
 void runSimulation() {
     /*
     * billiards10.txt, diffusion.txt, sam4.txt, brownian.txt, sam4.txt
