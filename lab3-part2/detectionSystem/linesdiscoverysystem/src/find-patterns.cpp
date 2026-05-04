@@ -80,6 +80,11 @@ void analyseData(const std::filesystem::path& pointsFile,
     // Läser in alla punkter
     auto points = readPoints(in);
 
+    // Exercise 2:
+    // Sorterar alla punkter en gång i början.
+    // Då kan vi senare hitta ändpunkter utan att sortera varje grupp.
+    std::sort(points.begin(), points.end());
+
     // Går igenom varje punkt p
     for (const Point& p : points) {
 
@@ -162,8 +167,12 @@ void sortSlopes(std::vector<std::pair<double, Point>>& slopes) {
 
     // Sorterar alla punkter efter lutning relativt p
     // Punkter med samma lutning hamnar bredvid varandra
-    std::sort(slopes.begin(), slopes.end(),
-              [](const auto& a, const auto& b) { return a.first < b.first; });
+    
+   //std::sort(slopes.begin(), slopes.end(), [](const auto& a, const auto& b) { return a.first < b.first; });
+
+    // För Excercise 2
+    std::stable_sort(slopes.begin(), slopes.end(),
+                     [](const auto& a, const auto& b) { return a.first < b.first; });
 }
 
 void findSegmentsFromPoint(const Point& p, const std::vector<std::pair<double, Point>>& slopes,
@@ -188,24 +197,50 @@ void findSegmentsFromPoint(const Point& p, const std::vector<std::pair<double, P
         // Om minst 3 punkter har samma lutning → tillsammans med p blir det ≥ 4
         if (groupSize >= 3) {
 
-            std::vector<Point> linePoints;
+            //std::vector<Point> linePoints;
 
-            // Lägg till p först
-            linePoints.push_back(p);
+            //// Lägg till p först
+            //linePoints.push_back(p);
 
-            // Lägg till alla punkter i gruppen
+            //// Lägg till alla punkter i gruppen
+            //for (int i = startIndex; i < endIndex; i++) {
+            //    linePoints.push_back(slopes[i].second);
+            //}
+
+            //// Sortera punkterna för att hitta start och slut
+            //std::sort(linePoints.begin(), linePoints.end());
+
+            //Point start = linePoints.front();
+            //Point end = linePoints.back();
+
+            //// Endast skriv ut linjen om p är minsta punkten
+            //// → förhindrar dubbletter
+            //if (p == start) {
+            //    out << start.x_ << " " << start.y_ << " " << end.x_ << " " << end.y_ << "\n";
+            //}
+
+            // Har gjort såhär för Excersise 2 ------------
+
+            // Vi börjar med att anta att p både är start- och slutpunkt
+            Point start = p;
+            Point end = p;
+
+            // Går igenom gruppen och hittar minsta och största punkt direkt.
+            // Då behöver vi inte sortera linePoints.
             for (int i = startIndex; i < endIndex; i++) {
-                linePoints.push_back(slopes[i].second);
+                const Point& q = slopes[i].second;
+
+                if (q < start) {
+                    start = q;
+                }
+
+                if (end < q) {
+                    end = q;
+                }
             }
 
-            // Sortera punkterna för att hitta start och slut
-            std::sort(linePoints.begin(), linePoints.end());
-
-            Point start = linePoints.front();
-            Point end = linePoints.back();
-
-            // Endast skriv ut linjen om p är minsta punkten
-            // → förhindrar dubbletter
+            // Skriv bara ut linjen om p är den minsta punkten.
+            // Detta gör att samma linje inte skrivs flera gånger.
             if (p == start) {
                 out << start.x_ << " " << start.y_ << " " << end.x_ << " " << end.y_ << "\n";
             }
