@@ -4,7 +4,8 @@
 #include <vector>
 #include <cassert>
 
-#define TEST_PRIORITY_QUEUE
+// ska kommenteras bort eftersom används bara vid testning
+// #define TEST_PRIORITY_QUEUE
 
 /**
  * A heap based priority queue where the root is the smallest element -- min heap
