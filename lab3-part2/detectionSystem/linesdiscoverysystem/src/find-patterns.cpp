@@ -50,6 +50,16 @@ public:
     int y_;
 };
 
+std::vector<Point> readPointsFromFile(std::ifstream& in);
+
+std::vector<std::pair<double, Point>> computeSlopes(const Point& p,
+                                                    const std::vector<Point>& points);
+
+void sortSlopes(std::vector<std::pair<double, Point>>& slopes);
+
+void findSegmentsFromPoint(const Point& p, const std::vector<std::pair<double, Point>>& slopes,
+                           std::ofstream& out);
+
 /* ***************************************************** */
 
 int main() {
@@ -77,8 +87,16 @@ void analyseData(const std::filesystem::path& pointsFile,
     std::ifstream in(pointsFile);
     std::ofstream out(segmentsFile);
 
+    std::cout << "Input path: " << pointsFile << "\n";
+    std::cout << "Output path: " << segmentsFile << "\n";
+
+    if (!in) {
+        std::cout << "Kunde inte öppna inputfilen!\n";
+        return;
+    }
+
     // Läser in alla punkter
-    auto points = readPoints(in);
+    auto points = readPointsFromFile(in);
 
     // Exercise 2:
     // Sorterar alla punkter en gång i början.
@@ -114,7 +132,7 @@ void analyseData(const std::string& name) {
 
 // Delar upp analyzeData till flera småfunktioner
 
-std::vector<Point> readPoints(std::ifstream& in) {
+std::vector<Point> readPointsFromFile(std::ifstream& in) {
     // Läser in antal punkter från filen
     int n;
     in >> n;
