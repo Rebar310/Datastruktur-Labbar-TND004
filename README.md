@@ -5,7 +5,7 @@
 ![Lab2Notes](IMG_1099.jpeg)
 
 # Lab3 Notes: 
-![Lab2Notes](lab3Part1.jpeg)
-![Lab2Notes](lab3Part2.jpeg)
+![Lab2Notes](lab3Part1.jpg)
+![Lab2Notes](lab3Part2.jpg)
 
 # Lab4 Notes:
