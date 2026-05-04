@@ -1,18 +1,18 @@
-#include <format>
+ï»¿#include <format>
 #include <compare>
 #include <fstream>
 #include <filesystem>
-#include <vector> // jag la till, behövs för std::vector
-#include <algorithm> // jag la till, behövs för std::sort
-#include <limits> // jag la till, behövs för infinity()
+#include <vector> // jag la till, behÃ¶vs fÃ¶r std::vector
+#include <algorithm> // jag la till, behÃ¶vs fÃ¶r std::sort
+#include <limits> // jag la till, behÃ¶vs fÃ¶r infinity()
 
 
 #include <find-patterns.hpp>
 
-// Sökvägen till data-mappen
+// SÃ¶kvÃ¤gen till data-mappen
 const std::filesystem::path data_dir{DATA_DIR};
 
-// Minsta antal punkter som måste ligga på samma linje
+// Minsta antal punkter som mÃ¥ste ligga pÃ¥ samma linje
 constexpr int minPoints = 4;
 
 struct Point { // feel free to modify
@@ -20,11 +20,11 @@ public:
     // Konstruktor: skapar en punkt med x- och y-koordinater
     Point(int x = 0, int y = 0) : x_{x}, y_{y} {}
 
-    // Gör att vi kan jämföra två punkter med ==
+    // GÃ¶r att vi kan jÃ¤mfÃ¶ra tvÃ¥ punkter med ==
     bool operator==(const Point& p) const = default;
 
-    // Gör att punkter kan sorteras.
-    // Först jämförs y-koordinaten, och om y är samma jämförs x-koordinaten.
+    // GÃ¶r att punkter kan sorteras.
+    // FÃ¶rst jÃ¤mfÃ¶rs y-koordinaten, och om y Ã¤r samma jÃ¤mfÃ¶rs x-koordinaten.
     std::strong_ordering operator<=>(Point p) const {
         if (y_ < p.y_) {
             return std::strong_ordering::less;
@@ -43,7 +43,7 @@ public:
         return std::strong_ordering::equivalent;
     }
 
-    // Returnerar punkten som en sträng, t.ex. "(3,5)"
+    // Returnerar punkten som en strÃ¤ng, t.ex. "(3,5)"
     std::string toString() const { return std::format("({},{})", x_, y_); }
 
     int x_;
@@ -54,7 +54,7 @@ public:
 
 int main() {
 
-    // Frågar användaren vilken inputfil som ska användas
+    // FrÃ¥gar anvÃ¤ndaren vilken inputfil som ska anvÃ¤ndas
     std::cout << "Enter the name of input points file: ";
     std::string points_file;
     std::cin >> points_file;
@@ -72,135 +72,146 @@ void analyseData(const std::filesystem::path& pointsFile,
      * Feel free to modify the function signature
      * Break your code into small functions
      */
-    // Öppnar inputfilen med punkter
+    
+     // Ã–ppnar filer
     std::ifstream in(pointsFile);
-
-    // Skapar/öppnar outputfilen där linjesegmenten ska skrivas
     std::ofstream out(segmentsFile);
 
-    // Läser in antalet punkter från filen
+    // LÃ¤ser in alla punkter
+    auto points = readPoints(in);
+
+    // GÃ¥r igenom varje punkt p
+    for (const Point& p : points) {
+
+        // Steg 1: berÃ¤kna lutningar frÃ¥n p
+        auto slopes = computeSlopes(p, points);
+
+        // Steg 2: sortera lutningar
+        sortSlopes(slopes);
+
+        // Steg 3: hitta linjesegment
+        findSegmentsFromPoint(p, slopes, out);
+    }
+
+
+}
+
+void analyseData(const std::string& name) {
+    // Namnet pÃ¥ inputfilen
+    std::filesystem::path points_name = name;
+
+    // Namnet pÃ¥ outputfilen, t.ex. segments-points200.txt
+    std::filesystem::path segments_name = "segments-" + name;
+
+    // KÃ¶r analysen med fullstÃ¤ndig sÃ¶kvÃ¤g till input och output
+    analyseData(data_dir / points_name, data_dir / "output" / segments_name);
+}
+
+// Delar upp analyzeData till flera smÃ¥funktioner
+
+std::vector<Point> readPoints(std::ifstream& in) {
+    // LÃ¤ser in antal punkter frÃ¥n filen
     int n;
     in >> n;
 
-    // Här sparas alla punkter från inputfilen
     std::vector<Point> points;
 
-    // Läser in alla punkter från filen
+    // LÃ¤ser in varje punkt (x, y) och sparar i vektorn
     for (int i = 0; i < n; i++) {
         int x, y;
         in >> x >> y;
 
-        // Skapar en Point och lägger in den i vektorn
+        // Skapar en Point och lÃ¤gger till i listan
         points.emplace_back(x, y);
     }
 
-    // Går igenom varje punkt p.
-    // p används som "utgångspunkt" för att hitta andra punkter
-    // som ligger på samma linje som p.
-    for (const Point& p : points) {
-
-        // Här sparas lutningen mellan p och varje annan punkt.
-        // Varje element består av:
-        // first  = lutningen
-        // second = punkten q
-        std::vector<std::pair<double, Point>> slopes;
-
-         // Går igenom alla andra punkter q
-        for (const Point& q : points) {
-
-            // Hoppa över om q är samma punkt som p
-            if (p == q) {
-                continue;
-            }
-
-            double slope;
-
-            // Om x-koordinaterna är samma är linjen vertikal.
-            // Då går det inte att räkna vanlig lutning eftersom
-            // man hade dividerat med 0.
-            if (q.x_ == p.x_) {
-                slope = std::numeric_limits<double>::infinity();
-            } else {
-                // Beräknar lutningen mellan p och q:
-                // slope = skillnad i y / skillnad i x
-                slope = static_cast<double>(q.y_ - p.y_) / (q.x_ - p.x_);
-            }
-
-            // Sparar lutningen tillsammans med punkten q
-            slopes.push_back({slope, q});
-        }
-
-        // Sorterar punkterna efter lutning relativt p.
-        // Punkter med samma lutning hamnar bredvid varandra.
-        std::sort(slopes.begin(), slopes.end(),
-                  [](const auto& a, const auto& b) { return a.first < b.first; });
-
-        // startIndex markerar början på en grupp med samma lutning
-        int startIndex = 0;
-
-        // Går igenom den sorterade slopes-vektorn
-        while (startIndex < slopes.size()) {
-
-            // endIndex används för att hitta slutet på gruppen
-            // med samma lutning
-            int endIndex = startIndex + 1;
-
-            // Fortsätt så länge nästa punkt har samma lutning
-            // som punkten vid startIndex
-            while (endIndex < slopes.size() && slopes[endIndex].first == slopes[startIndex].first) {
-                endIndex++;
-            }
-
-            // Antalet punkter i gruppen som har samma lutning till p
-            int groupSize = endIndex - startIndex;
-
-            // Om minst 3 andra punkter har samma lutning till p,
-            // betyder det att dessa 3 punkter + p = minst 4 punkter
-            // på samma linje.
-            if (groupSize >= 3) {
-
-                // Samlar alla punkter som ligger på samma linje
-                std::vector<Point> linePoints;
-
-                // Lägg först till utgångspunkten p
-                linePoints.push_back(p);
-
-                // Lägg till alla punkter i gruppen med samma lutning
-                for (int i = startIndex; i < endIndex; i++) {
-                    linePoints.push_back(slopes[i].second);
-                }
-
-                // Sorterar punkterna på linjen efter y och sedan x.
-                // Då hamnar ena ändpunkten först och andra sist.
-                std::sort(linePoints.begin(), linePoints.end());
-
-                // Första punkten blir startpunkt för linjesegmentet
-                Point start = linePoints.front();
-
-                // Sista punkten blir slutpunkt för linjesegmentet
-                Point end = linePoints.back();
-
-                // Skriver bara ut linjen om p är den minsta punkten.
-                // Detta gör att samma linje inte skrivs flera gånger,
-                // eftersom samma linje annars hittas från flera olika p.
-                if (p == start) {
-                    out << start.x_ << " " << start.y_ << " " << end.x_ << " " << end.y_ << "\n";
-                }
-            }
-
-            // Flytta startIndex till nästa grupp med ny lutning
-            startIndex = endIndex;
-        }
-    }
+    // Returnerar alla punkter
+    return points;
 }
 
-void analyseData(const std::string& name) {
-    // Namnet på inputfilen
-    std::filesystem::path points_name = name;
+std::vector<std::pair<double, Point>> computeSlopes(const Point& p,
+                                                    const std::vector<Point>& points) {
 
-    // Namnet på outputfilen, t.ex. segments-points200.txt
-    std::filesystem::path segments_name = "segments-" + name;
+    // HÃ¤r lagras (lutning, punkt)
+    std::vector<std::pair<double, Point>> slopes;
 
-    // Kör analysen med fullständig sökväg till input och output
-    analyseData(data_dir / points_name, data_dir / "output" / segments_name);
+    // GÃ¥r igenom alla punkter q
+    for (const Point& q : points) {
+
+        // Hoppa Ã¶ver om det Ã¤r samma punkt
+        if (p == q) continue;
+
+        double slope;
+
+        // Om x Ã¤r samma â†’ vertikal linje â†’ oÃ¤ndlig lutning
+        if (q.x_ == p.x_) {
+            slope = std::numeric_limits<double>::infinity();
+        } else {
+            // Vanlig lutning: (y2 - y1) / (x2 - x1)
+            slope = static_cast<double>(q.y_ - p.y_) / (q.x_ - p.x_);
+        }
+
+        // Spara lutningen tillsammans med punkten
+        slopes.push_back({slope, q});
+    }
+
+    return slopes;
+}
+
+void sortSlopes(std::vector<std::pair<double, Point>>& slopes) {
+
+    // Sorterar alla punkter efter lutning relativt p
+    // Punkter med samma lutning hamnar bredvid varandra
+    std::sort(slopes.begin(), slopes.end(),
+              [](const auto& a, const auto& b) { return a.first < b.first; });
+}
+
+void findSegmentsFromPoint(const Point& p, const std::vector<std::pair<double, Point>>& slopes,
+                           std::ofstream& out) {
+
+    // startIndex markerar bÃ¶rjan pÃ¥ en grupp med samma lutning
+    int startIndex = 0;
+
+    // GÃ¥r igenom alla lutningar
+    while (startIndex < slopes.size()) {
+
+        // Hitta slutet pÃ¥ gruppen med samma lutning
+        int endIndex = startIndex + 1;
+
+        while (endIndex < slopes.size() && slopes[endIndex].first == slopes[startIndex].first) {
+            endIndex++;
+        }
+
+        // Antal punkter i gruppen (exklusive p)
+        int groupSize = endIndex - startIndex;
+
+        // Om minst 3 punkter har samma lutning â†’ tillsammans med p blir det â‰¥ 4
+        if (groupSize >= 3) {
+
+            std::vector<Point> linePoints;
+
+            // LÃ¤gg till p fÃ¶rst
+            linePoints.push_back(p);
+
+            // LÃ¤gg till alla punkter i gruppen
+            for (int i = startIndex; i < endIndex; i++) {
+                linePoints.push_back(slopes[i].second);
+            }
+
+            // Sortera punkterna fÃ¶r att hitta start och slut
+            std::sort(linePoints.begin(), linePoints.end());
+
+            Point start = linePoints.front();
+            Point end = linePoints.back();
+
+            // Endast skriv ut linjen om p Ã¤r minsta punkten
+            // â†’ fÃ¶rhindrar dubbletter
+            if (p == start) {
+                out << start.x_ << " " << start.y_ << " " << end.x_ << " " << end.y_ << "\n";
+            }
+        }
+
+        // GÃ¥ vidare till nÃ¤sta grupp
+        startIndex = endIndex;
+    }
 }
