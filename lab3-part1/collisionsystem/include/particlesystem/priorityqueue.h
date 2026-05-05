@@ -177,37 +177,37 @@ Comparable PriorityQueue<Comparable>::deleteMin() {
     Comparable minValue = pq[0];
 
     // Flytta sista elementet till roten
-    pq[0] = pq.back();
-    pq.pop_back();
+    pq[0] = pq.back(); // värdet längst bak i vektorn tar nu rotens plats
+    pq.pop_back();  // tar bort sista elementet i vektorn
 
     // "Bubble down" för att återställa heap-egenskapen
-    size_t hole = 0;
+    size_t currentPosition = 0;
 
     while (true) {
-        size_t left = 2 * hole + 1;
-        size_t right = 2 * hole + 2;
-        size_t smallest = hole;
+        size_t left = 2 * currentPosition + 1;
+        size_t right = 2 * currentPosition + 2;
+        size_t smallest = currentPosition;
 
-        // Kolla vänster barn
+        // Kolla vänster barn finns sen är barnet mindre än oss
         if (left < pq.size() && pq[left] < pq[smallest]) {
             smallest = left;
         }
 
-        // Kolla höger barn
+        // Kolla höger barn finns sen är barnet mindre än oss
         if (right < pq.size() && pq[right] < pq[smallest]) {
             smallest = right;
         }
 
         // Om vi redan är korrekt → stoppa
-        if (smallest == hole) {
+        if (smallest == currentPosition) {
             break;
         }
 
         // Byt plats med minsta barnet
-        std::swap(pq[hole], pq[smallest]);
+        std::swap(pq[currentPosition], pq[smallest]);
 
         // Fortsätt nedåt
-        hole = smallest;
+        currentPosition = smallest;
     }
 
     // Do not remove this code block
@@ -226,26 +226,26 @@ void PriorityQueue<Comparable>::insert(const Comparable& x) {
     
    //  ADD CODE HERE
      
-     // Lägg in det nya elementet sist i vektorn
+   // Lägg in det nya elementet sist i vektorn
    pq.push_back(x);
 
-   // Startposition (det "hål" vi ska flytta upp)
-   size_t hole = pq.size() - 1;
+   // Startposition (det "element" vi ska flytta upp)
+   size_t currentPosition = pq.size() - 1;
 
    // Bubble up: jämför med parent och byt plats om det behövs
-   while (hole > 0) {
-       size_t parent = (hole - 1) / 2;
+   while (currentPosition > 0) {
+       size_t parent = (currentPosition - 1) / 2;
 
        // Om heap-egenskapen redan är uppfylld → stoppa
-       if (!(pq[hole] < pq[parent])) {
+       if (!(pq[currentPosition] < pq[parent])) {
            break;
        }
 
        // Annars: byt plats med parent
-       std::swap(pq[hole], pq[parent]);
+       std::swap(pq[currentPosition], pq[parent]);
 
        // Flytta upp ett steg
-       hole = parent;
+       currentPosition = parent;
    }
 
     // Do not remove this code block
@@ -265,18 +265,18 @@ void PriorityQueue<Comparable>::heapify() {
 
      // ADD CODE HERE
 
-    // Vi börjar från sista inre noden (föräldrar till löv)
+    // Vi börjar från sista inre noden (föräldrar till blad)
     // pq.size()/2 - 1 ger index för sista nod som har barn
     for (int i = static_cast<int>(pq.size()) / 2 - 1; i >= 0; --i) {
 
         // Startposition för "bubble down"
-        size_t hole = static_cast<size_t>(i);
+        size_t currentPosition = static_cast<size_t>(i);
 
         // Sifta ner elementet tills heap-egenskapen uppfylls
         while (true) {
-            size_t left = 2 * hole + 1;
-            size_t right = 2 * hole + 2;
-            size_t smallest = hole;
+            size_t left = 2 * currentPosition + 1;
+            size_t right = 2 * currentPosition + 2;
+            size_t smallest = currentPosition;
 
             // Kolla vänster barn
             if (left < pq.size() && pq[left] < pq[smallest]) {
@@ -289,15 +289,15 @@ void PriorityQueue<Comparable>::heapify() {
             }
 
             // Om inget barn är mindre → klart
-            if (smallest == hole) {
+            if (smallest == currentPosition) {
                 break;
             }
 
             // Byt plats med minsta barnet
-            std::swap(pq[hole], pq[smallest]);
+            std::swap(pq[currentPosition], pq[smallest]);
 
             // Fortsätt ner i trädet
-            hole = smallest;
+            currentPosition = smallest;
         }
     }
      
