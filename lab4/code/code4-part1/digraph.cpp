@@ -9,6 +9,9 @@
 #include <cassert>
 #include <format>
 
+#include <queue> // lade till denna 
+#include <limits> // lade till denna 
+
 #include "digraph.h"
 
 // Note: graph vertices are numbered from 1 -- i.e. there is no vertex zero
@@ -58,7 +61,49 @@ void Digraph::insertEdge(const Edge& e) {
 void Digraph::uwsssp(int s) const {
     assert(s >= 1 && s <= size);
 
-   // ADD CODE
+   // ADD CODE ****************************************************
+
+    // Initialisera alla noder
+    for (int v = 1; v <= size; ++v) {
+        dist[v] = std::numeric_limits<int>::max();
+        path[v] = 0;
+        done[v] = false;
+    }
+
+    // Queue för BFS
+    std::queue<int> q;
+
+    // Startnod
+    dist[s] = 0;
+    done[s] = true;
+
+    q.push(s);
+
+    // BFS (Breadth First Search)
+    while (!q.empty()) {
+
+        int v = q.front();
+        q.pop();
+
+        // Gå igenom alla grannar
+        for (auto const& e : table[v]) {
+
+            int u = e.to;
+
+            // Om ej besökt
+            if (!done[u]) {
+
+                done[u] = true;
+
+                dist[u] = dist[v] + 1;
+
+                path[u] = v;
+
+                q.push(u);
+            }
+        }
+    }
+
 }
 
 
@@ -100,5 +145,25 @@ void Digraph::printTree() const {
 void Digraph::printPath(int t) const {
     assert(t >= 1 && t <= size);
 
-    // ADD CODE
+    // ADD CODE ********************************************
+
+    // Ingen väg finns
+    if (dist[t] == std::numeric_limits<int>::max()) {
+        std::cout << " no path\n";
+        return;
+    }
+
+    printHelp(t);
+
+    std::cout << "\nPath length = " << dist[t] << "\n";
+}
+
+//Hjälpfunktion för att kunna göra rekrusion i funktionen ovan.
+void Digraph::printHelp(int t) const {
+
+    if (path[t] != 0) {
+        printHelp(path[t]);
+    }
+
+    std::cout << " " << t;
 }

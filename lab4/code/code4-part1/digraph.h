@@ -58,5 +58,5 @@ private:
     // -- Private CONSTRUCTOR
     explicit Digraph(int n);
 
-    void printHelp(int t) const;
+    void printHelp(int t) const; // rekursiv hjälpfunktion
 };
