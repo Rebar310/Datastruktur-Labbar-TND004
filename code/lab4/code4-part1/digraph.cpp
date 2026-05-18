@@ -9,6 +9,9 @@
 #include <cassert>
 #include <format>
 
+#include <queue> // lade till denna för std::queue
+#include <limits> // lade till denna för std::numeric_limits
+
 #include "digraph.h"
 
 // Note: graph vertices are numbered from 1 -- i.e. there is no vertex zero
@@ -59,6 +62,42 @@ void Digraph::uwsssp(int s) const {
     assert(s >= 1 && s <= size);
 
    // ADD CODE
+    // Initialisera alla noder
+    for (int v = 1; v <= size; ++v) {
+        dist[v] = std::numeric_limits<int>::max();
+        path[v] = 0;
+        done[v] = false;
+    }
+
+    //startnode 
+	dist[s] = 0;  
+	done[s] = true;
+
+    std::queue<int> q;
+
+	// Lägg startnoden i kön
+	q.push(s);
+
+
+	// BFS
+	while (!q.empty()) {
+		int v= q.front();
+		q.pop();
+        
+		//går igenom alla grannar till v
+		for (const auto& e : table[v]) {
+			int u = e.to;
+
+			//om ej besökt, uppdatera avstånd, väg och markera som besökt
+			if (!done[u]) {
+				dist[u] = dist[v] + 1; // Eftersom det är unweighted, öka avståndet med 1
+				path[u] = v; // Spara vägen
+				done[u] = true; // Markera noden som klar
+				q.push(u); // Lägg noden i kön
+			}
+		}
+	}
+
 }
 
 
@@ -101,4 +140,21 @@ void Digraph::printPath(int t) const {
     assert(t >= 1 && t <= size);
 
     // ADD CODE
+
+	//om det inte finns någon väg från s till t, skriv ut det
+	if (dist[t] == std::numeric_limits<int>::max()) {
+		std::cout << " No path from s to " << t << "\n";
+	}
+	else {
+		printHelp(t);
+		std::cout << "(" <<dist[t]<<")"<<"\n";
+	}
+}
+
+void Digraph::printHelp(int t) const {
+    if (t == 0) {
+		return; // Basfall: ingen väg
+	}
+	printHelp(path[t]); // Rekursivt anropa för att skriva ut vägen
+	std::cout <<" " << t << " "; // Skriv ut noden
 }
