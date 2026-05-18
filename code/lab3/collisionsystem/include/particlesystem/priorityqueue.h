@@ -176,7 +176,8 @@ Comparable PriorityQueue<Comparable>::deleteMin() {
          // återställ heapens order, property=percolate down
         size_t currentIndex = 0;                   // starta från rooten
 
-        while (leftChild < pq.size()) {  // om vänsterbarnet finns, om noden är en leaf node, då finns det inget vänsterbarn
+        while (2 * currentIndex + 1 < pq.size()) {  // om vänsterbarnet finns, om noden är en leaf node, då
+                                        // finns det inget vänsterbarn
             size_t leftChild = 2 * currentIndex + 1;   // vänster barn index
             size_t rightChild = 2 * currentIndex + 2;  // högerbarn index
             size_t smallest = currentIndex;            // minsta elementets index
@@ -227,13 +228,13 @@ void PriorityQueue<Comparable>::insert(const Comparable& x) {
     while (currentIndex > 0) { 
          size_t parentIndex =(currentIndex - 1) / 2;  // förälderns index, föräldern är alltid (childIndex - 1) / 2
 
-         if (pq[currentIndex] >= pq[parentIndex]]) {  // om barnet är större än eller lika med föräldern, då är heapen återställd
-                                                      // byter plats på barnet och föräldern
+         if (pq[currentIndex] < pq[parentIndex]) {  //om barnet är mindre än föräldern, byt plats på barnet och föräldern
+                                                      
              std::swap(pq[currentIndex], pq[parentIndex]);
              // uppdatera currentIndex och parentIndex
              currentIndex = parentIndex;
-         } else {
-             break;  // om barnet är mindre än föräldern, då är heapen återställd
+         } else {  // annars är heapen korrekt, breaka loopen
+             break;  
          }
     }
 
@@ -262,7 +263,7 @@ void PriorityQueue<Comparable>::heapify() {
         // percolate down
         size_t currentIndex = i;
 
-        while (leftChild < pq.size()) {
+        while (2 * currentIndex + 1 < pq.size()) {
             size_t leftChild = 2 * currentIndex + 1;
             size_t rightChild = 2 * currentIndex + 2;
             size_t smallest = currentIndex;

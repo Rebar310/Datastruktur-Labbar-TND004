@@ -56,6 +56,7 @@ void CollisionSystem::simulate(double simulationTime, double drawFrequenzy) {
     addEvent(0.0, nullptr, nullptr, queue, simulationTime);
 
     // add all possible collisions of particle with other particles and walls to the queue
+    //question 1: 
     for (auto& particle : particles_) {
         predict(queue, particle, currentTime, simulationTime);
     }
@@ -63,7 +64,9 @@ void CollisionSystem::simulate(double simulationTime, double drawFrequenzy) {
     // the main event-driven simulation loop
     while (!queue.isEmpty()) {
         // get impending event, discard if invalidated
-        const Event e = queue.deleteMin();
+        const Event e =
+            queue.deleteMin();  // deletemin() O(1) operation, since the vector is sorted in
+                                // decreasing order, the last element is the smallest
         if (!e.isValid()) {
             continue;
         }
@@ -71,7 +74,7 @@ void CollisionSystem::simulate(double simulationTime, double drawFrequenzy) {
         Particle* particleA = e.particleA;  // pointer to particle A
         Particle* particleB = e.particleB;  // pointer to particle B
 
-        // update particles positions
+        // update particles positions, O(n) operation, where n is the number of particles
         for (auto& p : particles_) {
             p.move(e.time - currentTime);
         }

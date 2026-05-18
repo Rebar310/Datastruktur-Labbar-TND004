@@ -68,9 +68,10 @@ void analyseData(const std::filesystem::path& pointsFile,
         return;
     }
 
-    
+    // börjar med att läsa in antalet punkter från filen
     int n;  //antal punkter
     if (!(pointsFileStream >> n)) return;  // om det inte går att läsa in antalet punkter, returnera
+
     std::vector<Point> points;      // läs in punkterna i en vektor från filen
     points.reserve(n);  // reserverar antalet punkter i vektorn
 
@@ -81,7 +82,7 @@ void analyseData(const std::filesystem::path& pointsFile,
         points.push_back(Point(x, y)); 
     }
 
-    // sortera punkterna i vektorn
+    // sortera punkterna i vektorn, O(n log n) operation, där n är antalet punkter
     std::sort(points.begin(), points.end());
 
     // skapa utdata filen för segmenten och skriv ut segmenten i filen
@@ -91,7 +92,7 @@ void analyseData(const std::filesystem::path& pointsFile,
         return;
     }
 
-    //Huvudalgorithmen, A sorting based algorithm , 
+    // Huvudalgorithmen, A sorting based algorithm , yttre loop n
     for (size_t i = 0; i < points.size(); i++) {
         Point p = points[i];
 
@@ -99,11 +100,13 @@ void analyseData(const std::filesystem::path& pointsFile,
         std::vector<Point> others;
        // others.erase(others.begin() + i);  // ta bort alla punkter som ligger före p i vektorn
 
+        // skapar other vektorn O(n) operation, där n är antalet punkter
          for (size_t j = i + 1; j < points.size(); j++) {
              others.push_back(points[j]);
          }
 
-        // sortera other baserad på lutningen mellan p och varje punkt i other
+        // sortera other baserad på lutningen mellan p och varje punkt i other, O(n log n)
+         // operation, där n är antalet punkter i other
         std::sort(others.begin(), others.end(), [p](const Point& a, const Point& b) {
             // beräkna lutningen mellan p och a
             int dy_a = a.y_ - p.y_;
@@ -123,6 +126,7 @@ void analyseData(const std::filesystem::path& pointsFile,
 
         // går igenom för att hitta grupper av 3> med samma lutning
         int startindex = 0;
+        // iterativ, linjär O(n)
         while (startindex < others.size()) {
             int endindex = startindex + 1;
 
