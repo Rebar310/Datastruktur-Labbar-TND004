@@ -34,11 +34,20 @@ void DSets::join(int r, int s) {
     assert(V[r] < 0);
     assert(V[s] < 0);
 
-    // simple union
-    V[r] = s;
+    // simple union (gammal)
+    //V[r] = s;
 
     // *** TODO ***
     // Do Union by Size
+	if (V[r] < V[s]) { // r har mer noder än s
+		V[r] += V[s]; // uppdatera storleken på r
+		V[s] = r; // gör r till den nya roten
+	}
+	else { // s har mer noder än r
+		V[s] += V[r]; // uppdatera storleken på s
+		V[r] = s; // gör s till den nya roten
+	}
+
 }
 
 // return name of current set for x
@@ -46,15 +55,24 @@ void DSets::join(int r, int s) {
 int DSets::find(int x) {
     assert(x >= 1 && x <= std::ssize(V) - 1);
 
-    // simple find
-    if (V[x] < 0) {
+    // simple find (gamal)
+  /*  if (V[x] < 0) {
         return x;
     } else {
         return find(V[x]);
-    }
+    }*/
 
     // *** TODO ***
     // find with path compression
+
+	if (V[x] < 0) {
+		return x;   //x är redan en rot
+	} else {
+		//sparar roten i en variabel för att kunna använda den senare
+		V[x] = find(V[x]); 
+		return V[x];
+	}
+
 }
 
 // just in case ...
