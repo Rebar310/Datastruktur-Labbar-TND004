@@ -22,6 +22,10 @@ add_executable(Lab4-part1 code4-part1/edge.h code4-part1/digraph.h code4-part1/d
 add_executable(Lab4-part2 code4-part2/edge.h code4-part2/dsets.h code4-part2/dsets.cpp 
                      code4-part2/graph.h code4-part2/graph.cpp code4-part2/main.cpp 
 					 code4-part2/graph1.txt code4-part2/graph1_test_run.txt code4-part2/graph2.txt code4-part2/graph2_test_run.txt)
+add_executable(Lab4-part3
+    code4-part3/flights-data.txt code4-part3/travel-execution.txt 
+)
 
 enable_warnings(Lab4-part1)
 enable_warnings(Lab4-part2)
+enable_warnings(Lab4-part3)
