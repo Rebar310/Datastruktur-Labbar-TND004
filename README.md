@@ -9,3 +9,5 @@
 ![Lab2Notes](lab3Part2.jpg)
 
 # Lab4 Notes:
+![Lab2Notes](lab4part1o2.jpg)
+![Lab2Notes](lab4part3.jpg)
