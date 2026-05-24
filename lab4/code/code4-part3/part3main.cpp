@@ -14,6 +14,7 @@ struct Flight {
     int to = -1;        // Index för destinationsflygplats
     int departure = 0; // Avgångstid i minuter efter midnatt
     int arrival = 0;   // Ankomsttid i minuter efter midnatt
+    std::string flightNo = "";
     std::string fromCode = ""; // Flygplatskod för start
     std::string toCode = "";   // Flygplatskod för destination
 };
@@ -66,124 +67,132 @@ std::string minutesToTime(int minutes) {
     return h + ":" + m; // Returnera komplett tid
 }
 
-void loadFlightData() { // Läser in flygdata från fil och bygger grafen
-
+void loadFlightData() {
     std::string fileName;
 
-    std::cout << "File name? "; // Fråga användaren efter filnamn
+    std::cout << "File name   ? ";
+    std::getline(std::cin >> std::ws, fileName);
 
-    std::getline(std::cin >> std::ws, fileName); 
+    std::ifstream file(fileName);
 
-    std::ifstream file(fileName); // Öppna filen
-
-
-    if (!file) {  // Kontrollera om filen kunde öppnas
+    if (!file) {
         std::cout << "Could not open file.\n";
         return;
     }
 
-    graph.clear(); // Töm tidigare data
+    graph.clear();
     airportToIndex.clear();
     indexToAirport.clear();
+    plansComputed = false;
 
-    int n; // Antal flygplatser
+    std::string label;
+    int n;
 
-    file >> n;
+    file >> label >> n; // Läser: airports 12
 
-    graph.resize(n); // Skapa plats i datastrukturerna
+    graph.resize(n);
     indexToAirport.resize(n);
 
-    // Läs in alla flygplatskoder
     for (int i = 0; i < n; ++i) {
-
         std::string airport;
-
         file >> airport;
 
-        airportToIndex[airport] = i; // Koppla kod -> index
-        indexToAirport[i] = airport; // Koppla index -> kod
+        airportToIndex[airport] = i;
+        indexToAirport[i] = airport;
     }
 
-    std::string date; // Läs datumet (används ej mer)
-    file >> date;
     std::string line;
-    std::getline(file, line);  // Läs bort tom rad efter datumet
 
-    // Läs flyg rad för rad
+    // Läs bort resten av raden efter sista flygplatsen
+    std::getline(file, line);
+
+    // Hoppa fram till CSV-headern
     while (std::getline(file, line)) {
+        if (line == "flight_no,origin,destination,dep_time,arr_time") {
+            break;
+        }
+    }
 
-        // Hoppa över tomma rader
+    while (std::getline(file, line)) {
         if (line.empty()) {
             continue;
         }
 
-        std::stringstream ss(line); // Gör det enkelt att läsa från raden
+        std::stringstream ss(line);
 
-        // Variabler för flygdata
+        std::string flightNo;
         std::string fromCode;
         std::string toCode;
-        std::string departureTime;
-        std::string arrivalTime;
+        std::string depDateTime;
+        std::string arrDateTime;
 
-        // Läs flygrad
-        ss >> fromCode >> toCode >> departureTime >> arrivalTime;
+        std::getline(ss, flightNo, ',');
+        std::getline(ss, fromCode, ',');
+        std::getline(ss, toCode, ',');
+        std::getline(ss, depDateTime, ',');
+        std::getline(ss, arrDateTime, ',');
 
-        // Kontrollera att startflygplats finns
-        if (airportToIndex.find(fromCode) == airportToIndex.end()) {
+        if (airportToIndex.find(fromCode) == airportToIndex.end() ||
+            airportToIndex.find(toCode) == airportToIndex.end()) {
             continue;
         }
 
-        // Kontrollera att destinationsflygplats finns
-        if (airportToIndex.find(toCode) == airportToIndex.end()) {
-            continue;
-        }
+        std::string depTime = depDateTime.substr(11, 5);
+        std::string arrTime = arrDateTime.substr(11, 5);
 
-        int from = airportToIndex[fromCode]; // Hämta index
-        int to = airportToIndex[toCode];
+        Flight flight;
 
-        Flight flight; // Skapa flygobjekt
-
-        flight.from = from;
-        flight.to = to;
-        flight.departure = timeToMinutes(departureTime);
-        flight.arrival = timeToMinutes(arrivalTime);
+        flight.flightNo = flightNo;
         flight.fromCode = fromCode;
         flight.toCode = toCode;
+        flight.from = airportToIndex[fromCode];
+        flight.to = airportToIndex[toCode];
+        flight.departure = timeToMinutes(depTime);
+        flight.arrival = timeToMinutes(arrTime);
 
-        graph[from].push_back(flight); // Lägg till flyget i adjacency list
+        graph[flight.from].push_back(flight);
     }
 
-    std::cout << "Flight data loaded.\n";
+    std::cout << "\nFlight data loaded.\n";
 }
 
 // Skriver ut hela grafen
 void displayGraph() {
-
-    // Kontrollera att graf finns
     if (graph.empty()) {
         std::cout << "No graph loaded.\n";
         return;
     }
 
-    // Gå igenom alla flygplatser
-    for (int i = 0; i < graph.size(); ++i) {
+    std::vector<int> order;
 
-        std::cout << indexToAirport[i] << ":\n";
-
-        for (const auto& flight : graph[i]) { // Skriv ut alla flyg från flygplatsen
-
-            std::cout
-                << "  "
-                << flight.fromCode
-                << " -> "
-                << flight.toCode
-                << "  "
-                << minutesToTime(flight.departure)
-                << " - "
-                << minutesToTime(flight.arrival)
-                << "\n";
-        }
+    for (int i = 0; i < indexToAirport.size(); ++i) {
+        order.push_back(i);
     }
+
+    std::sort(order.begin(), order.end(), [](int a, int b) {
+        return indexToAirport[a] < indexToAirport[b];
+        });
+
+    std::cout << "\n------------------------------------------------------------------\n";
+    std::cout << "Airport  adjacency lists\n";
+    std::cout << "------------------------------------------------------------------\n";
+
+    for (int i : order) {
+        std::cout << indexToAirport[i] << "  :\n";
+
+        for (const auto& flight : graph[i]) {
+            std::cout << "\t("
+                << flight.flightNo << " "
+                << flight.toCode << ", "
+                << minutesToTime(flight.departure) << ", "
+                << minutesToTime(flight.arrival)
+                << ")\n";
+        }
+
+        std::cout << "\n";
+    }
+
+    std::cout << "------------------------------------------------------------------\n";
 }
 
 // Kör Dijkstra för att hitta tidigaste ankomsttider
@@ -290,52 +299,51 @@ void computeTravelPlans() {
 
 // Skriver ut resvägen till en destination
 void printTravelPlanTo(int destination) {
-
-    // Ingen väg hittades
     if (dist[destination] == INF) {
-
-        std::cout
-            << "No reachable travel plan.\n";
-
+        std::cout << "No reachable travel plan.\n";
         return;
     }
 
-    std::vector<Flight> route; // Här sparas flygen i rutten
+    std::cout << "\n** Travel plan from "
+        << indexToAirport[startAirport]
+        << " to "
+        << indexToAirport[destination]
+        << " **\n";
+
+    if (destination == startAirport) {
+        std::cout << minutesToTime(startTime)
+            << " "
+            << indexToAirport[startAirport]
+            << "\n";
+        return;
+    }
+
+    std::vector<Flight> route;
     int current = destination;
 
-    while (//Gå baklänges genom path - informationen
-        current != startAirport &&
-        previousAirport[current] != -1
-        ) {
-
-        route.push_back(previousFlight[current]); // Lägg till flyget
-
-        current = previousAirport[current]; // Gå till föregående flygplats
+    while (current != startAirport && previousAirport[current] != -1) {
+        route.push_back(previousFlight[current]);
+        current = previousAirport[current];
     }
 
-    // Rutten byggdes baklänges
-    // Därför vänds den
     std::reverse(route.begin(), route.end());
 
-    // Skriv ut flygen i ordning
-    for (const auto& flight : route) {
+    std::cout << minutesToTime(startTime)
+        << " "
+        << indexToAirport[startAirport];
 
-        std::cout
-            << flight.fromCode
-            << " -> "
-            << flight.toCode
-            << "  departure: "
+    for (const auto& flight : route) {
+        std::cout << " "
             << minutesToTime(flight.departure)
-            << "  arrival: "
+            << " "
+            << flight.flightNo
+            << " --> "
             << minutesToTime(flight.arrival)
-            << "\n";
+            << " "
+            << flight.toCode;
     }
 
-    // Skriv ut slutlig ankomsttid
-    std::cout
-        << "Earliest arrival: "
-        << minutesToTime(dist[destination])
-        << "\n";
+    std::cout << "\n";
 }
 
 // Frågar användaren efter destination
@@ -374,59 +382,41 @@ void showTravelPlanToDestination() {
 
 // Skriver ut alla nåbara resplaner
 void showAllReachablePlans() {
-
-    // Kontrollera att Dijkstra körts
     if (!plansComputed) {
-
-        std::cout
-            << "Compute travel plans first.\n";
-
+        std::cout << "Compute travel plans first.\n";
         return;
     }
 
-    // Gå igenom alla flygplatser
+    std::vector<int> order;
+
     for (int i = 0; i < graph.size(); ++i) {
-
-        // Hoppa över startflygplatsen
-       // och flygplatser som ej nås
-        if (
-            i != startAirport &&
-            dist[i] != INF
-            ) {
-
-            std::cout
-                << "\nTravel plan to "
-                << indexToAirport[i]
-                << ":\n";
-
-            printTravelPlanTo(i); // Skriv ut resplan
+        if (i != startAirport && dist[i] != INF) {
+            order.push_back(i);
         }
+    }
+
+    std::sort(order.begin(), order.end(), [](int a, int b) {
+        return indexToAirport[a] < indexToAirport[b];
+        });
+
+    for (int i : order) {
+        printTravelPlanTo(i);
     }
 }
 
 // Skriver ut meny =================================================
 int menu() {
-
-    std::cout << "\n== Travel Planner ==\n";
-
-    std::cout << "1. Load flight data\n";
-
-    std::cout << "2. Display graph\n";
-
-    std::cout << "3. Compute travel plans\n";
-
-    std::cout
-        << "4. Show travel plan to destination\n";
-
-    std::cout
-        << "5. Show all reachable travel plans\n";
-
+    std::cout << "\n=========== Menu ============\n";
+    std::cout << "1. Read Graph\n";
+    std::cout << "2. Print Graph\n";
+    std::cout << "3. Dijkstra\n";
+    std::cout << "4. Travel Plan\n";
+    std::cout << "5. Print Earliest Arrival Paths\n";
     std::cout << "9. Quit\n";
+    std::cout << "==============================\n";
 
     int choice;
-
-    std::cout << "Your choice? ";
-
+    std::cout << "Your choice ? ";
     std::cin >> choice;
 
     return choice;

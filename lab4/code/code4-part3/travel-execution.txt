@@ -218,7 +218,7 @@ OSL  :
 ==============================
 Your choice ? 3
 Start airport? ARN
-Start time(hh mm) ? 05 00
+Start time(hh mm) ? 05:00
 
 =========== Menu ============
 1. Read Graph
