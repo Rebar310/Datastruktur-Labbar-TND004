@@ -404,7 +404,7 @@ void showAllReachablePlans() {
     }
 }
 
-// Skriver ut meny
+// Skriver ut meny =================================================
 int menu() {
 
     std::cout << "\n== Travel Planner ==\n";
@@ -432,7 +432,7 @@ int menu() {
     return choice;
 }
 
-// Huvudprogram
+// Huvudprogram ____________________________________________________________
 int main() {
 
     int choice = 0;

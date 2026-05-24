@@ -24,7 +24,7 @@ int menu();
 // Return a pointer to the graph
 std::unique_ptr<Graph> readGraph(const std::string& fileName);
 
-// -- MAIN PROGRAM
+// -- MAIN PROGRAM ----------------------------------------------------------------------------------------
 
 int main() {
     std::unique_ptr<Graph> G{nullptr};
