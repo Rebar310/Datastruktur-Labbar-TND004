@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <sstream>      // för stringstream
 #include <algorithm>    // för sort
+#include <queue>        // för priority_queue
 
 // =========================================================================
 // 1. Struktur och Globala variabler
@@ -22,6 +23,14 @@ struct Flight {
 	int arrivalTime;    //ankomsttid, tiden från x till ankomsten i minuter
 };
 
+struct QueueElement {
+	int arrivalTime;   //tid för ankomst
+	int airportIndex;  //index för flygplatsen i grafen, (noden)
+	// Överbelasta operator> för att jämföra QueueElement baserat på arrivalTime
+	bool operator>(const QueueElement& other) const {
+		return arrivalTime > other.arrivalTime;
+	}
+};
 //=========================================================================
 //2. Graph class 
 //=========================================================================
@@ -31,9 +40,9 @@ public:
 
 	void readGraph(const std::string& fileName);        //option 1: läsa in grafen från en fil, där varje rad representerar en flygning med formatet: flightNumber fromNode toNode depTime arrivalTime
 	void printGraph() const;                            //option 2: visa grafen i form av en adjacency list
-	void computeTravelPlans() const;     //Option 3: Dijkstra's algorithm för att beräkna den snabbaste resvägen från en startflygplats till en destination
-	void showPathTo() const;   //Option 4: Planera en resa som involverar flera flygningar, där användaren kan specificera en startflygplats, en destination och en önskad avresetid. Programmet bör sedan föreslå den bästa resvägen baserat på tillgängliga flygningar och deras avgångs- och ankomsttider.
-	void showAllPaths() const;   //Option 5: Visa alla resvägar från en startflygplats till en destination, sorterade efter ankomsttid.
+	void computeTravelPlans();     //Option 3: Dijkstra's algorithm för att beräkna den snabbaste resvägen från en startflygplats till en destination
+	void showPathTo();   //Option 4: Planera en resa som involverar flera flygningar, där användaren kan specificera en startflygplats, en destination och en önskad avresetid. Programmet bör sedan föreslå den bästa resvägen baserat på tillgängliga flygningar och deras avgångs- och ankomsttider.
+	void showAllPaths();   //Option 5: Visa alla resvägar från en startflygplats till en destination, sorterade efter ankomsttid.
 
 private:
 	int numAirports=0; // Antal flygplatser
@@ -53,6 +62,8 @@ private:
 
     int timeToMinutes(const std::string& time) const;
 	std::string minutesToTime(int minutes) const;
+
+    void printPath(int destIndex) const;
 };
 
 // Global instans av din Graph-klass
@@ -191,6 +202,142 @@ void Graph::printGraph() const {
     std::cout << std::format("{:-<66}\n", '-');
 }
 
+//option 3: Option 3: Given a start airport s and time t, compute travel plans to all destinations (allowing stopovers), using only flights departing no earlier than t, and determining the earliest arrival time for each destination. Dijkstra’s algorithm should be used. 
+void Graph::computeTravelPlans() {        //dijkstra's algorithm för att beräkna den snabbaste resvägen från en startflygplats till en destination
+   //kontrollerar om en graf finns
+    if (graph.empty()) {
+		std::cout << "No graph loaded. Please read a graph first.\n";
+		return; 
+    }
+    
+	//frågar om start flyplats (flygplatskod) och start tid (hh:mm)
+	std::string startAirport;       //s
+    std::cout << "Start airport? ";
+    std::cin >> startAirport;
+
+    std::string startH, startM;          // t
+    std::cout << "Start time (hh mm)? ";
+    std::cin >> startH >> startM;
+
+	//kontrollerar om start flygplatsen finns i grafen
+	if (airporttoIndex.find(startAirport) == airporttoIndex.end()) {
+		std::cout << "Start airport not found in graph.\n";
+		return;
+	}
+
+	currentStartNode = airporttoIndex[startAirport];
+	currentStartTime = timeToMinutes(startH + ":" + startM);
+
+	//tilldelar minsta avståndet till alla flygplatser som oändligt (INT_MAX) och föregående flygplats och flygning som -1 eller tom
+    dist.assign(numAirports, INT_MAX);
+    prevAirport.assign(numAirports, -1);
+	prevFlight.resize(numAirports); // Reservera plats för föregående flygning
+    prevFlight.assign(numAirports, Flight{});
+	visited.assign(numAirports, false);
+
+    // Skapa en Min-heap prioritetskö som sorterar på tidigast ankomsttid via >
+    std::priority_queue<QueueElement, std::vector<QueueElement>, std::greater<QueueElement>> pq;
+
+	// Starta från startnoden med starttiden
+	dist[currentStartNode] = currentStartTime;
+
+	pq.push({ currentStartTime, currentStartNode });
+
+	while (!pq.empty()) {
+		QueueElement current = pq.top();
+		pq.pop();
+
+		int u = current.airportIndex;
+		if (visited[u]) continue; // Om noden redan är besökt, hoppa över
+		visited[u] = true;          //besökt blir markerad
+
+		// Gå igenom alla flyg från u (nuvarande flygplats)
+		for (const auto& flight : graph[u]) {
+			int v = airporttoIndex[flight.toNode];  //till flygplatsens index
+
+			int depTime = flight.depTime;       //departur tid
+			int arrTime = flight.arrivalTime;   //arrival tid
+
+			// Endast överväg flyg som avgår efter eller vid den tid vi anländer till u
+			if (depTime >= dist[u]) {
+				// Om en snabbare ankomsttid hittas
+				if (arrTime < dist[v]) {
+					dist[v] = arrTime; // Uppdatera kortaste ankomsttid
+					prevAirport[v] = u; // Spara föregående flygplats
+					prevFlight[v] = flight; // Spara föregående flygning
+					pq.push({ dist[v], v }); // Lägg till grannen i kön med uppdaterad ankomsttid
+				}
+			}
+		}
+	}
+}
+//hjälp funktion för att skriva ut resplanen från startnoden till en destination
+void Graph::printPath(int destIndex) const{
+	
+}
+//Option 4: Show the travel plan from s to a specified destination.
+void Graph::showPathTo(){
+	//kontrollerar om dijkstra's algoritm har körts
+    if (currentStartNode == -1) {
+        std::cout << "Please run Dijkstra (Option 3) first.\n";
+        return;
+    }
+
+	//hämtar destination flygplatsen från användaren
+    std::string destinationAirport; // d
+    std::cout << "Destination airport? ";
+    std::cin >> destinationAirport;
+
+	//kontrollerar om destination flygplatsen finns i grafen
+    if (airporttoIndex.find(destinationAirport) == airporttoIndex.end()) {
+        std::cout << "Destination airport not found in graph.\n";
+        return;
+    }
+
+	//hämtar destination flygplatsens index
+	int destIndex = airporttoIndex[destinationAirport];
+
+	if (destIndex == currentStartNode) {
+		std::cout << "You are already at the destination airport.\n";
+		return;
+	}
+
+	//om destinationen inte kan nås
+	if (dist[destIndex] == INT_MAX) {
+		std::cout << "No reachable travel plan to the destination airport.\n";
+		return;
+	}
+
+	//återuppbygga resplanen genom att följa prevAirport och prevFlight bakåt från destinationen till startnoden
+
+	std::cout << "** Travel plan from " << indexToAirport[currentStartNode] << " to " << indexToAirport[destIndex] << " **\n";
+
+	std::vector<Flight> pathFlights; // Vektor för att lagra flygningarna i resplanen
+	int currentIndex = destIndex;
+
+	// Följ prevAirport och prevFlight bakåt tills vi når startnoden
+	while (currentIndex != currentStartNode && prevAirport[currentIndex] != -1) {
+		pathFlights.push_back(prevFlight[currentIndex]); // Lägg till flygningen i resplanen
+		currentIndex = prevAirport[currentIndex]; // Gå till föregående flygplats
+	}
+    //börja skriva ut: ex: 05:00 ARN 05:40 FN3601 --> 07:10 CPH 11:10 FN3606 --> 12:10 OSL 12:30 FN3666 --> 13:25 MAD
+
+    // Skriv ut den inledande starttiden och startflygplatsen 
+    std::cout << minutesToTime(currentStartTime) << " " << indexToAirport[currentStartNode];
+
+	//skriv ut följande flygningar i resplanen i rätt ordning
+	std::reverse(pathFlights.begin(), pathFlights.end()); // Vänd på flygningarna så att de är i rätt ordning)
+    
+	for (const auto& flight : pathFlights) {
+		std::cout << " " << minutesToTime(flight.depTime) << " " << flight.flightNum << " --> " << minutesToTime(flight.arrivalTime) << " " << flight.toNode;
+	}
+	std::cout << "\n";
+
+}
+
+void Graph::showAllPaths(){
+
+}
 // =========================================================================
 //3. Meny och main
 // =========================================================================
@@ -234,14 +381,17 @@ int main() {
             G.printGraph();
         } break;
         case 3: {       //Dijkstra's algorithm
-            std::cout << "\n";
+            //std::cout << "\n";
             G.computeTravelPlans();
         } break;
         case 4: {
-            /* std::cout << "\n";
-             if (G)
-                 G->mstKruskal();*/
+			std::cout << "\n";
+            G.showPathTo();
         } break;
+        case 5: {
+
+        }
+
         case stop:
             std::cout << "Bye bye ...\n";
             break;
