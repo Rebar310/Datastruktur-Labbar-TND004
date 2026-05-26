@@ -67,38 +67,40 @@ std::string minutesToTime(int minutes) {
     return h + ":" + m; // Returnera komplett tid
 }
 
+// Läser in flygdata från textfil och bygger grafen
 void loadFlightData() {
-    std::string fileName;
+    std::string fileName; // Variabel för filnamnet användaren skriver in
 
     std::cout << "File name   ? ";
-    std::getline(std::cin >> std::ws, fileName);
+    std::getline(std::cin >> std::ws, fileName); // Läser hela raden inklusive mellanslag
 
-    std::ifstream file(fileName);
+    std::ifstream file(fileName); // Öppnar filen
 
     if (!file) {
         std::cout << "Could not open file.\n";
         return;
     }
 
-    graph.clear();
-    airportToIndex.clear();
-    indexToAirport.clear();
-    plansComputed = false;
+    graph.clear(); // Töm tidigare data i grafen
+    airportToIndex.clear(); // Töm map som översätter flygplatskod -> index
+    indexToAirport.clear(); // Töm vector som översätter index -> flygplatskod
+    plansComputed = false; // Markerar att Dijkstra ännu inte körts
 
-    std::string label;
-    int n;
+    std::string label; // Första ordet i filen ("airports")
+    int n; // Antal flygplatser
 
     file >> label >> n; // Läser: airports 12
 
-    graph.resize(n);
-    indexToAirport.resize(n);
-
+    graph.resize(n); // Skapar adjacency list med plats för n flygplatser
+    indexToAirport.resize(n); // Skapar vector som lagrar flygplatskoder
+    
+    // Läs in alla flygplatskoder
     for (int i = 0; i < n; ++i) {
         std::string airport;
-        file >> airport;
+        file >> airport; // Läs flygplatskod
 
-        airportToIndex[airport] = i;
-        indexToAirport[i] = airport;
+        airportToIndex[airport] = i; // Koppla flygplatskod -> index
+        indexToAirport[i] = airport; // Koppla index -> flygplatskod
     }
 
     std::string line;
@@ -108,6 +110,7 @@ void loadFlightData() {
 
     // Hoppa fram till CSV-headern
     while (std::getline(file, line)) {
+        // När vi hittar headern börjar flygdata efter denna
         if (line == "flight_no,origin,destination,dep_time,arr_time") {
             break;
         }
