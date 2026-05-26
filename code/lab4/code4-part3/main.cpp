@@ -42,7 +42,7 @@ public:
 	void printGraph() const;                            //option 2: visa grafen i form av en adjacency list
 	void computeTravelPlans();     //Option 3: Dijkstra's algorithm för att beräkna den snabbaste resvägen från en startflygplats till en destination
 	void showPathTo();   //Option 4: Planera en resa som involverar flera flygningar, där användaren kan specificera en startflygplats, en destination och en önskad avresetid. Programmet bör sedan föreslå den bästa resvägen baserat på tillgängliga flygningar och deras avgångs- och ankomsttider.
-	void showAllPaths();   //Option 5: Visa alla resvägar från en startflygplats till en destination, sorterade efter ankomsttid.
+	void showAllPaths() const;   //Option 5: Visa alla resvägar från en startflygplats till en destination, sorterade efter ankomsttid.
 
 private:
 	int numAirports=0; // Antal flygplatser
@@ -259,22 +259,44 @@ void Graph::computeTravelPlans() {        //dijkstra's algorithm för att beräk
 			int arrTime = flight.arrivalTime;   //arrival tid
 
 			// Endast överväg flyg som avgår efter eller vid den tid vi anländer till u
-			if (depTime >= dist[u]) {
+			if (depTime >= dist[u] && arrTime < dist[v]) {
 				// Om en snabbare ankomsttid hittas
-				if (arrTime < dist[v]) {
 					dist[v] = arrTime; // Uppdatera kortaste ankomsttid
 					prevAirport[v] = u; // Spara föregående flygplats
 					prevFlight[v] = flight; // Spara föregående flygning
 					pq.push({ dist[v], v }); // Lägg till grannen i kön med uppdaterad ankomsttid
-				}
 			}
 		}
 	}
 }
 //hjälp funktion för att skriva ut resplanen från startnoden till en destination
 void Graph::printPath(int destIndex) const{
-	
+	std::cout << "\n";
+	std::cout << "** Travel plan from " << indexToAirport[currentStartNode] << " to " << indexToAirport[destIndex] << " **\n";
+
+	std::vector<Flight> pathFlights; // Vektor för att lagra flygningarna i resplanen
+	int currentIndex = destIndex;
+
+	// Följ prevAirport och prevFlight bakåt tills vi når startnoden
+	while (currentIndex != currentStartNode && prevAirport[currentIndex] != -1) {
+		pathFlights.push_back(prevFlight[currentIndex]); // Lägg till flygningen i resplanen
+		currentIndex = prevAirport[currentIndex]; // Gå till föregående flygplats
+	}
+	//börja skriva ut: ex: 05:00 ARN 05:40 FN3601 --> 07:10 CPH 11:10 FN3606 --> 12:10 OSL 12:30 FN3666 --> 13:25 MAD
+
+	// Skriv ut den inledande starttiden och startflygplatsen 
+	std::cout << minutesToTime(currentStartTime) << " " << indexToAirport[currentStartNode];
+
+	//skriv ut följande flygningar i resplanen i rätt ordning
+	std::reverse(pathFlights.begin(), pathFlights.end()); // Vänd på flygningarna så att de är i rätt ordning)
+
+	for (const auto& flight : pathFlights) {
+		std::cout << " " << minutesToTime(flight.depTime) << " " << flight.flightNum << " --> " << minutesToTime(flight.arrivalTime) << " " << flight.toNode;
+	}
+	std::cout << "\n";
 }
+
+
 //Option 4: Show the travel plan from s to a specified destination.
 void Graph::showPathTo(){
 	//kontrollerar om dijkstra's algoritm har körts
@@ -287,6 +309,7 @@ void Graph::showPathTo(){
     std::string destinationAirport; // d
     std::cout << "Destination airport? ";
     std::cin >> destinationAirport;
+
 
 	//kontrollerar om destination flygplatsen finns i grafen
     if (airporttoIndex.find(destinationAirport) == airporttoIndex.end()) {
@@ -308,34 +331,36 @@ void Graph::showPathTo(){
 		return;
 	}
 
-	//återuppbygga resplanen genom att följa prevAirport och prevFlight bakåt från destinationen till startnoden
 
-	std::cout << "** Travel plan from " << indexToAirport[currentStartNode] << " to " << indexToAirport[destIndex] << " **\n";
-
-	std::vector<Flight> pathFlights; // Vektor för att lagra flygningarna i resplanen
-	int currentIndex = destIndex;
-
-	// Följ prevAirport och prevFlight bakåt tills vi når startnoden
-	while (currentIndex != currentStartNode && prevAirport[currentIndex] != -1) {
-		pathFlights.push_back(prevFlight[currentIndex]); // Lägg till flygningen i resplanen
-		currentIndex = prevAirport[currentIndex]; // Gå till föregående flygplats
-	}
-    //börja skriva ut: ex: 05:00 ARN 05:40 FN3601 --> 07:10 CPH 11:10 FN3606 --> 12:10 OSL 12:30 FN3666 --> 13:25 MAD
-
-    // Skriv ut den inledande starttiden och startflygplatsen 
-    std::cout << minutesToTime(currentStartTime) << " " << indexToAirport[currentStartNode];
-
-	//skriv ut följande flygningar i resplanen i rätt ordning
-	std::reverse(pathFlights.begin(), pathFlights.end()); // Vänd på flygningarna så att de är i rätt ordning)
+	//här börjar printpath, som är en hjälp funktion för att skriva ut resplanen från startnoden till en destination, som kallas i showPathTo och i showAllPaths
     
-	for (const auto& flight : pathFlights) {
-		std::cout << " " << minutesToTime(flight.depTime) << " " << flight.flightNum << " --> " << minutesToTime(flight.arrivalTime) << " " << flight.toNode;
-	}
-	std::cout << "\n";
+    printPath(destIndex);
 
 }
 
-void Graph::showAllPaths(){
+//Option 5: Show the travel plans from s to all reachable destinations.  
+void Graph::showAllPaths() const { //från startplats snabbast rut till alla destinationer, bokstavsordning
+    //utgår från option 3, med startplats och starttiden, snabbaste rut till alla destinationer. 
+	//kontrollerar om dijkstra's algoritm har körts
+	if (currentStartNode == -1) {
+		std::cout << "Please run Dijkstra (Option 3) first.\n";
+		return;
+	}
+
+	//en for-loop som går igenom alla destinationer och skriver ut resplanen för varje destination som kan nås från startplatsen, sorterade i bokstavsordning efter destinationens namn.
+	std::vector<std::pair<std::string, int>> reachableDestinations; // Vektor för att lagra nåbara destinationer och deras index
+	
+	for (int i = 0; i < numAirports; ++i) {
+		if (dist[i] != INT_MAX && i != currentStartNode) { // Endast nåbara destinationer, exkludera startnoden
+			reachableDestinations.emplace_back(indexToAirport[i], i);
+		}
+	}
+	// Sortera nåbara destinationer i bokstavsordning
+	std::sort(reachableDestinations.begin(), reachableDestinations.end());
+	// Skriv ut resplanen för varje nåbar destination
+	for (const auto& [airportName, destIndex] : reachableDestinations) {
+		printPath(destIndex);
+	}
 
 }
 // =========================================================================
@@ -385,13 +410,13 @@ int main() {
             G.computeTravelPlans();
         } break;
         case 4: {
-			std::cout << "\n";
+			//std::cout << "\n";
             G.showPathTo();
         } break;
-        case 5: {
-
-        }
-
+		case 5: {
+			std::cout << "\n";
+			G.showAllPaths();
+		}break;
         case stop:
             std::cout << "Bye bye ...\n";
             break;
