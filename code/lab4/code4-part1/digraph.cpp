@@ -62,31 +62,35 @@ void Digraph::uwsssp(int s) const {
     assert(s >= 1 && s <= size);
 
    // ADD CODE
+   
     // Initialisera alla noder
     for (int v = 1; v <= size; ++v) {
-        dist[v] = std::numeric_limits<int>::max();
-        path[v] = 0;
-        done[v] = false;
+        dist[v] = std::numeric_limits<int>::max();      //oändligt avstånd
+        path[v] = 0;                                    //börjar på 0
+		done[v] = false;                                //markerar alla noder som inte besökta
     }
 
     //startnode 
-	dist[s] = 0;  
-	done[s] = true;
+	dist[s] = 0;                                        //startnoden har avstånd 0
+	done[s] = true;                                     //markera startnoden som besökt
 
+	// Skapa en kö för BFS, first in, first out
     std::queue<int> q;
+
 
 	// Lägg startnoden i kön
 	q.push(s);
 
 
-	// BFS
+	// BFS (Breadth-First Search) loop, kör tills kön är tom, O(n+m) där n är antal noder och m är antal kanter
 	while (!q.empty()) {
-		int v= q.front();
-		q.pop();
+		int v = q.front();           //hämtar den första noden i kön
+		q.pop();                     //tar bort den första noden från kön
         
 		//går igenom alla grannar till v
 		for (const auto& e : table[v]) {
-			int u = e.to;
+			//u är grannen till v, som nås via kanten e
+			int u = e.to;               //e.to är grannen till v, som nås via kanten e, e=(v,u)
 
 			//om ej besökt, uppdatera avstånd, väg och markera som besökt
 			if (!done[u]) {
@@ -142,10 +146,10 @@ void Digraph::printPath(int t) const {
     // ADD CODE
 
 	//om det inte finns någon väg från s till t, skriv ut det
-	if (dist[t] == std::numeric_limits<int>::max()) {
+	if (dist[t] == std::numeric_limits<int>::max()) {       //om fortfarande oändligt avstånd, så finns det ingen väg
 		std::cout << " No path from s to " << t << "\n";
 	}
-	else {
+	else {                                                  //annars, skriv ut vägen från s till t och avståndet
 		printHelp(t);
 		std::cout << "(" <<dist[t]<<")"<<"\n";
 	}
